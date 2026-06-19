@@ -1,6 +1,9 @@
 package com.agendajava.backend.model.procedures;
-import com.User.Doctor;
-import com.User.Patient;
+
+import java.time.LocalDateTime;
+
+import com.agendajava.backend.model.users.Doctor;
+import com.agendajava.backend.model.users.Patient;
 
 public class Surgery extends Procedure {
     int roomID;    // ID da sala alocada 
@@ -35,4 +38,5 @@ public class Surgery extends Procedure {
         this.priority = a9;                
         this.icuNecessity = a10; */
         // DEFINIÇÃO DOS OUTROS ATRIBUTOS!!!
+    }
 }

@@ -5,13 +5,14 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import com.agendajava.backend.model.procedures.Procedure;
 
-public class ClinicalCalendar {
+public class Calendar {
 
     // Estrutura de busca: data -> (horário de início -> procedimento)
     private final Map<LocalDate, TreeMap<LocalTime, Procedure>> agenda = new HashMap<>();
 
-    public ClinicalCalendar(){}
+    public Calendar(){}
 
     public void schedule(Procedure procedure) {
         LocalDate date = procedure.getStartDateTime().toLocalDate();
