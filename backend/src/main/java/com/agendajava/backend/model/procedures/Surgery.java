@@ -1,8 +1,11 @@
 package com.agendajava.backend.model.procedures;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.agendajava.backend.model.users.Doctor;
+import com.agendajava.backend.BackendApplication.Priority;
+import com.agendajava.backend.BackendApplication.Specialty;
 import com.agendajava.backend.model.users.Patient;
 
 public class Surgery extends Procedure {
@@ -24,9 +27,10 @@ public class Surgery extends Procedure {
     boolean icuNecessity;             // Necessidade de UTI pós-operatória
     boolean anestesistNecessity;      // Necessidade de anestesista
 
-    /* Lembrar de inicializar os atributos de Procedure também!!! */
-    public Surgery (LocalDateTime dateTime, Duration dur, Patient p, Doctor d) {
-        super(dateTime, dur, p, d);
+    // Obs: Specialty e Priority são do tipo Enum
+
+    public Surgery (String name, LocalDateTime dateTime, int dur, Patient p) {
+        super(name, dateTime, dur, p);
         /* this.estimatedDuration = a1;    
         this.turnoverTime = a2;         
         this.clinicalPriority = a3;     
@@ -39,4 +43,9 @@ public class Surgery extends Procedure {
         this.icuNecessity = a10; */
         // DEFINIÇÃO DOS OUTROS ATRIBUTOS!!!
     }
+
+    public void insertInPriorityLine(ArrayList<Surgery> priorityLine) {
+        // Pensar no algoritmo de inserção! (definição de prioridades)
+    }
+
 }
