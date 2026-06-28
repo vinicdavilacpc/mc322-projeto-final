@@ -6,6 +6,8 @@ public class Equipment {
 
     public Equipment(String name) {
         this.name = name;
-        // Instanciar o calendário!
+        // Instanciar o calendário! (Se realmente for necessário...)
     }
+
+
 }

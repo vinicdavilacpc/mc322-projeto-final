@@ -18,9 +18,15 @@ import com.agendajava.backend.model.procedures.Procedure;
 public class Calendar {
 
     // Estrutura de busca: data -> (horário de início -> procedimento)
-    private final Map<LocalDate, TreeMap<LocalTime, Procedure>> agenda = new HashMap<>();
+    private final Map<LocalDate, TreeMap<LocalTime, Procedure>> agenda;
 
-    public Calendar(){}
+    public Calendar(){
+        this.agenda = new HashMap<>();
+    }
 
-    // Os únicos métodos que fazem sentido estar nessa classe são os de listagem de procedimentos, caso achemos interessante...
+    public Map<LocalDate, TreeMap<LocalTime, Procedure>> get() {
+        return this.agenda;
+    }
+
+    // Os métodos que fazem sentido estar nessa classe são os de listagem de procedimentos, caso achemos interessante...
 }

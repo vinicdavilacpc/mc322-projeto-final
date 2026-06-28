@@ -1,11 +1,13 @@
 package com.agendajava.backend.model.procedures;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.agendajava.backend.BackendApplication.Priority;
 import com.agendajava.backend.BackendApplication.Specialty;
+import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
 
 public class Surgery extends Procedure {
@@ -29,8 +31,8 @@ public class Surgery extends Procedure {
 
     // Obs: Specialty e Priority são do tipo Enum
 
-    public Surgery (String name, LocalDateTime dateTime, int dur, Patient p) {
-        super(name, dateTime, dur, p);
+    public Surgery (String name, LocalDateTime dateTime, Duration dur, Patient p, Doctor d) {
+        super(name, dateTime, dur, p, d);
         /* this.estimatedDuration = a1;    
         this.turnoverTime = a2;         
         this.clinicalPriority = a3;     

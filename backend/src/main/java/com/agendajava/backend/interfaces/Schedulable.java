@@ -1,8 +1,10 @@
 package com.agendajava.backend.interfaces;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import com.agendajava.backend.model.Calendar;
+import com.agendajava.backend.model.procedures.Procedure;
 
 /***
  * Interface que realiza o agendamento de procedimentos. Permite verificar a disponibilidade
@@ -12,6 +14,6 @@ public interface Schedulable {
 
     /* É importante pensar bem nesse método de disponibilidade considerando que não pode haver overlap na duração
     de procedimentos distintos... */
-    public boolean isAvailable(LocalDateTime startDateTime, int durationInHours, Calendar resourceCalendar);
-    public void schedule(LocalDateTime startDateTime, int durationInHours, Calendar resourceCalendar);
+    public boolean isAvailable(LocalDateTime startDateTime, Duration duration);
+    public void schedule(LocalDateTime startDateTime, Duration duration, Procedure procedure);
 }
