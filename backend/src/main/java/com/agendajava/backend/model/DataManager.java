@@ -40,7 +40,7 @@ public class DataManager implements Persistable {
             return new ArrayList<>();
         }
 
-        // se o json tiver informações, transformamos ele em uma lista para auxiliar na manipulação dele
+        // se o json tiver informações, transformamos ele em uma lista para auxiliar nas operações
         CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, type);
         return objectMapper.readValue(file, listType);
     }
@@ -50,21 +50,36 @@ public class DataManager implements Persistable {
     }
 
     public <T> void add(String fileName, T object) {
+        @SuppressWarnings("unchecked")
         List<T> list = jsonToList(fileName, (Class<T>) object.getClass());
         list.add(object);
         save(fileName, list);
     }
 
     public <T> void delete(String fileName, T object) {
+        @SuppressWarnings("unchecked")
         List<T> list = jsonToList(fileName, (Class<T>) object.getClass());
 
-        
+        // itera sobre a lista e compara todos os objetos ao object, quando retornar true, remove ele da lista
+        list.removeIf(listItem -> {
+            try {
+                String itemJson = objectMapper.writeValueAsString(listItem);
+                String objectJson = objectMapper.writeValueAsString(object);
+
+                return itemJson.equals(objectJson);
+            } catch (Exception e) {
+                return false;
+            }
+        });
+        save(fileName, list);
     }
 
     public <T> T findOne(String fileName, Class<T> type, Predicate<T> filter) {
         List<T> list = jsonToList(fileName, type);
 
-        
+        return list.stream().filter(filter).findFirst().orElse(null);
+
+        // exemplo do predicate: user -> user.getEmail().equals(emailDigitado)
     }
 
 }
