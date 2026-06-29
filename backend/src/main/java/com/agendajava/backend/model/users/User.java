@@ -14,4 +14,6 @@ public abstract class User {
         this.password = password;
         this.calendar = new Calendar();
     }
+
+    
 }
