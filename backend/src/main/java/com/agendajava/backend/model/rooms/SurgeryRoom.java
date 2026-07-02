@@ -1,5 +1,6 @@
 package com.agendajava.backend.model.rooms;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,8 +11,6 @@ import com.agendajava.backend.interfaces.Schedulable;
 import com.agendajava.backend.model.Equipment;
 import com.agendajava.backend.model.SchedulingConflictException;
 import com.agendajava.backend.model.procedures.Procedure;
-
-import ch.qos.logback.core.util.Duration;
 
 public class SurgeryRoom extends Room implements Schedulable {
 
