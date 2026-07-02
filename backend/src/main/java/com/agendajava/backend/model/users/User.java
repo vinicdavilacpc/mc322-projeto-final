@@ -1,6 +1,12 @@
 package com.agendajava.backend.model.users;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Map;
+import java.util.TreeMap;
+
 import com.agendajava.backend.model.Calendar;
+import com.agendajava.backend.model.procedures.Procedure;
 
 public abstract class User {
     private String name;
@@ -15,5 +21,8 @@ public abstract class User {
         this.calendar = new Calendar();
     }
 
-    
+    /* Já retorna o calendário em um formato acessável! */
+    public Map<LocalDate, TreeMap<LocalTime, Procedure>> getCalendar() {
+        return this.calendar.get();
+    }
 }
