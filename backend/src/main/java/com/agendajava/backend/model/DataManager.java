@@ -74,6 +74,8 @@ public class DataManager implements Persistable {
         save(fileName, list);
     }
 
+    // método de update! 
+
     public <T> T findOne(String fileName, Class<T> type, Predicate<T> filter) {
         List<T> list = jsonToList(fileName, type);
 

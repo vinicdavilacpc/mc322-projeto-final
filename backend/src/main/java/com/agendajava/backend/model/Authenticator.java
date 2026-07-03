@@ -1,5 +1,7 @@
 package com.agendajava.backend.model;
 
+import com.agendajava.backend.exceptions.InvalidLogin;
+import com.agendajava.backend.exceptions.UserAlreadyExists;
 import com.agendajava.backend.interfaces.Authenticable;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
@@ -13,8 +15,7 @@ public class Authenticator implements Authenticable {
             u -> u.getEmail().equals(email));
         
         if (user == null) {
-            // print email ou senha errados (pode ser que o usuario n exista, mas eh melhor mostrar que os dados estao errados) 
-            // pode ser outra exception
+            throw new InvalidLogin("Invalid email or password.");
         } 
 
         return user; 
@@ -22,8 +23,7 @@ public class Authenticator implements Authenticable {
 
     public User register(String name, String email, String password, String role, DataManager dataManager) {
         if (userExists(email, dataManager)) {
-            // throw exception UserAlreadyExists e manda de volta para usuario escolher login
-            return null;
+            throw new UserAlreadyExists("A user with this email already exists.");
         } 
 
         User user = null;
