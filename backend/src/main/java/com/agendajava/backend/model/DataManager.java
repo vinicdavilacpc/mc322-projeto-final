@@ -50,14 +50,12 @@ public class DataManager implements Persistable {
     }
 
     public <T> void add(String fileName, T object) {
-        @SuppressWarnings("unchecked")
         List<T> list = jsonToList(fileName, (Class<T>) object.getClass());
         list.add(object);
         save(fileName, list);
     }
 
     public <T> void delete(String fileName, T object) {
-        @SuppressWarnings("unchecked")
         List<T> list = jsonToList(fileName, (Class<T>) object.getClass());
 
         // itera sobre a lista e compara todos os objetos ao object, quando retornar true, remove ele da lista
@@ -75,6 +73,24 @@ public class DataManager implements Persistable {
     }
 
     // método de update! 
+    public <T> void update(String fileName, T newObject, T oldObject) {
+        List<T> list = jsonToList(fileName, (Class<T>) oldObject.getClass());
+
+        for (int i = 0; i < list.size(); i++) {
+            try {
+                String itemJson = objectMapper.writeValueAsString(list.get(i));
+                String oldObjectJson = objectMapper.writeValueAsString(oldObject);
+
+                if (itemJson.equals(oldObjectJson)) {
+                    list.set(i, newObject);
+                    break;
+                }
+            } catch (Exception e) {
+                return;
+            }
+        }
+        save(fileName, list);
+    }
 
     public <T> T findOne(String fileName, Class<T> type, Predicate<T> filter) {
         List<T> list = jsonToList(fileName, type);
