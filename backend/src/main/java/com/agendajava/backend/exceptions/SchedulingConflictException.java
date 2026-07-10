@@ -1,4 +1,4 @@
-package com.agendajava.backend.model;
+package com.agendajava.backend.exceptions;
 
 public class SchedulingConflictException extends RuntimeException {
 

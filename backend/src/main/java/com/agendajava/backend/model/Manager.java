@@ -42,47 +42,96 @@ public class Manager {
         return true;
     }   
 
-    // confiamos que sempre vai ser um paciente
     public boolean appointmentCreated(String name, LocalDateTime startDateTime, Duration duration, Doctor doctor) {
         Patient patient = (Patient) this.user;
         Appointment appointment = new Appointment(name, startDateTime, duration, patient, doctor);
-        try {
-            patient.schedule(startDateTime, duration, appointment);
-        } 
-        catch (SchedulingConflict e) {
+
+        if (this.user == null || !(this.user instanceof Patient)) {
+            System.out.println("Only patients can schedule appointments.");
             return false;
         }
+
+        // precisa verificar se patient, doctor e rooms isAvailable antes de schedule, pq mesmo q tenha essa verificação no shedule,
+        // pode ser que um médico esteja livre mas a sala não e salvaria a consulta no calendario
+        if (!patient.isAvailable(startDateTime, duration)) {
+            System.out.println("You already have an appointment scheduled at that time");
+        }
+        if (!doctor.isAvailable(startDateTime, duration)) {
+            System.out.println("Doctor" + doctor.getName() + "isn't available at that time.");
+        }
+
+        // assim pode ser um unico try-catch
         try {
+            patient.schedule(startDateTime, duration, appointment);
             doctor.schedule(startDateTime, duration, appointment);
         } 
         catch (SchedulingConflict e) {
             return false;
         }
-        // ATUALIZAR PACIENTE
-        // ATUALIZAR DOUTOR
+
+        // atualiza procedures e o paciente e médico
         this.dataManager.add(this.dataManager.getProceduresFile(), appointment);
+
+        this.dataManager.update(
+            this.dataManager.getUsersFile(), 
+            patient, 
+            p -> p.getEmail().equals(patient.getEmail())
+        );
+
+        this.dataManager.update(
+            this.dataManager.getUsersFile(), 
+            doctor, 
+            d -> d.getEmail().equals(doctor.getEmail())
+        );
+        
         return true;
     }
 
-    // confiamos que sempre vai ser um pacient
     public boolean examinationCreated(String name, LocalDateTime startDateTime, Duration duration, Doctor doctor) {
         Patient patient = (Patient) this.user;
-        Appointment appointment = new Appointment(name, startDateTime, duration, patient, doctor);
+        Appointment examination = new Appointment(name, startDateTime, duration, patient, doctor);
+
+        if (this.user == null || !(this.user instanceof Patient)) {
+            System.out.println("Only patients can schedule examinations.");
+            return false;
+        }
+
+        // precisa verificar se patient, doctor e rooms isAvailable antes de schedule, pq mesmo q tenha essa verificação no shedule,
+        // pode ser que um médico esteja livre mas a sala não e salvaria o médico no json
+        if (!patient.isAvailable(startDateTime, duration)) {
+            System.out.println("You already have an appointment scheduled at that time");
+        }
+        if (!doctor.isAvailable(startDateTime, duration)) {
+            System.out.println("Doctor" + doctor.getName() + "isn't available at that time.");
+        }
+        // if (!room.isAvailable(startDateTime, duration)) {
+        //     System.out.println("The room isn't available");
+        // }
+
+        // assim pode ser um unico try-catch
         try {
-            patient.schedule(startDateTime, duration, appointment);
+            patient.schedule(startDateTime, duration, examination);
+            doctor.schedule(startDateTime, duration, examination);
+            // room.schedule(startDateTime, duration, examination);
         } 
         catch (SchedulingConflict e) {
             return false;
         }
-        try {
-            doctor.schedule(startDateTime, duration, appointment);
-        } 
-        catch (SchedulingConflict e) {
-            return false;
-        }
-        // ATUALIZAR PACIENTE
-        // ATUALIZAR DOUTOR
-        this.dataManager.add(this.dataManager.getProceduresFile(), appointment);
+
+        this.dataManager.add(this.dataManager.getProceduresFile(), examination);
+
+        this.dataManager.update(
+            this.dataManager.getUsersFile(), 
+            patient, 
+            p -> p.getEmail().equals(patient.getEmail())
+        );
+
+        this.dataManager.update(
+            this.dataManager.getUsersFile(), 
+            doctor, 
+            d -> d.getEmail().equals(doctor.getEmail())
+        );
+
         return true;
     }
 

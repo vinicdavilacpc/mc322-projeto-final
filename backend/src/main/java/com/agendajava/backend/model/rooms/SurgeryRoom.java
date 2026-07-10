@@ -7,9 +7,9 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.TreeMap;
 
+import com.agendajava.backend.exceptions.SchedulingConflictException;
 import com.agendajava.backend.interfaces.Schedulable;
 import com.agendajava.backend.model.Equipment;
-import com.agendajava.backend.model.SchedulingConflictException;
 import com.agendajava.backend.model.procedures.Procedure;
 
 public class SurgeryRoom extends Room implements Schedulable {

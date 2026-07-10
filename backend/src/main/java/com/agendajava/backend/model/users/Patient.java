@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.TreeMap;
 
+import com.agendajava.backend.exceptions.SchedulingConflictException;
 import com.agendajava.backend.interfaces.Schedulable;
-import com.agendajava.backend.model.SchedulingConflictException;
 import com.agendajava.backend.model.procedures.Procedure;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
