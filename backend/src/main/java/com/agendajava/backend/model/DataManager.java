@@ -73,22 +73,17 @@ public class DataManager implements Persistable {
     }
 
     // método de update! 
-    public <T> void update(String fileName, T newObject, T oldObject) {
-        List<T> list = jsonToList(fileName, (Class<T>) oldObject.getClass());
+    public <T> void update(String fileName, T updatedObject, Predicate<T> filter) {
+        List<T> list = jsonToList(fileName, (Class<T>) updatedObject.getClass());
 
         for (int i = 0; i < list.size(); i++) {
-            try {
-                String itemJson = objectMapper.writeValueAsString(list.get(i));
-                String oldObjectJson = objectMapper.writeValueAsString(oldObject);
-
-                if (itemJson.equals(oldObjectJson)) {
-                    list.set(i, newObject);
-                    break;
-                }
-            } catch (Exception e) {
-                return;
+            if (filter.test(list.get(i))) {
+                // 3. Achou! Substitui o objeto antigo pelo atualizado
+                list.set(i, updatedObject);
+                break; // Para o loop
             }
         }
+        
         save(fileName, list);
     }
 

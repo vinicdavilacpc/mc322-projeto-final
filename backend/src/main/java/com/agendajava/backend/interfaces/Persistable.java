@@ -10,7 +10,7 @@ public interface Persistable {
 
     public <T> void delete(String fileName, T object);
 
-    public <T> void update(String fileName, T newObject, T oldObject);
+    public <T> void update(String fileName, T updatedObject, Predicate<T> filter);
 
     public <T> T findOne(String fileName, Class<T> type, Predicate<T> filter);
 }
