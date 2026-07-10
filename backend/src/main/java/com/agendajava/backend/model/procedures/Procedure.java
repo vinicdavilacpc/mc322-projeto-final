@@ -13,12 +13,32 @@ public abstract class Procedure {
     private Doctor doctorInCharge; // Médico responsável (principal médico envolvido)
     private Patient patient;
 
-    public Procedure(String name, LocalDateTime time, Duration duration, Patient patient, Doctor doctor) {
+    public Procedure(String name, LocalDateTime time, Duration duration2, Patient patient, Doctor doctor) {
         this.name = name;
         this.startDateTime = time;
-        this.duration = duration;
+        this.duration = duration2;
         this.patient = patient;
         this.doctorInCharge = doctor;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public LocalDateTime getStarDateTime() {
+        return this.startDateTime;
+    }
+
+    public Duration getDuration() {
+        return this.duration;
+    }
+
+    public Patient getPatient() {
+        return this.patient;
+    }
+
+    public Doctor getDoctor() {
+        return this.doctorInCharge;
     }
 
     public LocalDateTime getEndDateTime() {

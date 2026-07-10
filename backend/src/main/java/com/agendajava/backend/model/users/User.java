@@ -21,6 +21,18 @@ public abstract class User {
         this.calendar = new Calendar();
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
     /* Já retorna o calendário em um formato acessável! */
     public Map<LocalDate, TreeMap<LocalTime, Procedure>> getCalendar() {
         return this.calendar.get();

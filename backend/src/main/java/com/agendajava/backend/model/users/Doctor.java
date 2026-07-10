@@ -18,6 +18,10 @@ public class Doctor extends User implements Schedulable {
         this.specialty = specialty;
     }
 
+    public String getSpecialty() {
+        return this.specialty;
+    }
+
     public boolean isAvailable(LocalDateTime startDateTime, Duration duration) {
         LocalDate date = startDateTime.toLocalDate();
         LocalTime startTime = startDateTime.toLocalTime();
