@@ -9,10 +9,15 @@ import java.util.TreeMap;
 import com.agendajava.backend.interfaces.Schedulable;
 import com.agendajava.backend.model.SchedulingConflictException;
 import com.agendajava.backend.model.procedures.Procedure;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Patient extends User implements Schedulable {
 
-    public Patient(String name, String email, String password) {
+    @JsonCreator 
+    public Patient(@JsonProperty("name") String name, 
+                   @JsonProperty("email") String email, 
+                   @JsonProperty("password") String password) {
         super(name, email, password);
     }
 

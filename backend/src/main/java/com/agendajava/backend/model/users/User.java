@@ -7,6 +7,18 @@ import java.util.TreeMap;
 
 import com.agendajava.backend.model.Calendar;
 import com.agendajava.backend.model.procedures.Procedure;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME, 
+    include = JsonTypeInfo.As.PROPERTY, 
+    property = "tipo" // Este é o nome da "etiqueta" que vai aparecer no JSON
+)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = Doctor.class, name = "medico"),
+    @JsonSubTypes.Type(value = Patient.class, name = "paciente")
+})
 
 public abstract class User {
     private String name;

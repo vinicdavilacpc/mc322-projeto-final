@@ -9,11 +9,17 @@ import java.util.TreeMap;
 import com.agendajava.backend.interfaces.Schedulable;
 import com.agendajava.backend.model.SchedulingConflictException;
 import com.agendajava.backend.model.procedures.Procedure;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Doctor extends User implements Schedulable {
     String specialty;
 
-    public Doctor(String name, String email, String password, String specialty) {
+    @JsonCreator
+    public Doctor(@JsonProperty("name") String name, 
+                  @JsonProperty("email") String email, 
+                  @JsonProperty("password") String password,
+                  @JsonProperty("specialty") String specialty) { // <--- Atributo extra!
         super(name, email, password);
         this.specialty = specialty;
     }

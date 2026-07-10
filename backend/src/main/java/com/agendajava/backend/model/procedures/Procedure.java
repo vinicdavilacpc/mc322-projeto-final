@@ -2,9 +2,21 @@ package com.agendajava.backend.model.procedures;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
+
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME, 
+    include = JsonTypeInfo.As.PROPERTY, 
+    property = "tipo"
+)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = Appointment.class, name = "consulta"),
+    @JsonSubTypes.Type(value = Examination.class, name = "exame"),
+    @JsonSubTypes.Type(value = Surgery.class, name = "cirurgia")
+})
 
 public abstract class Procedure {
     private String name;
