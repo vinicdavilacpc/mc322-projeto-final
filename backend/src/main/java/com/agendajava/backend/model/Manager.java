@@ -55,9 +55,11 @@ public class Manager {
         // pode ser que um médico esteja livre mas a sala não e salvaria a consulta no calendario
         if (!patient.isAvailable(startDateTime, duration)) {
             System.out.println("You already have an appointment scheduled at that time");
+            return false;
         }
         if (!doctor.isAvailable(startDateTime, duration)) {
             System.out.println("Doctor" + doctor.getName() + "isn't available at that time.");
+            return false;
         }
 
         // assim pode ser um unico try-catch
@@ -100,12 +102,15 @@ public class Manager {
         // pode ser que um médico esteja livre mas a sala não e salvaria o médico no json
         if (!patient.isAvailable(startDateTime, duration)) {
             System.out.println("You already have an appointment scheduled at that time");
+            return false;
         }
         if (!doctor.isAvailable(startDateTime, duration)) {
             System.out.println("Doctor" + doctor.getName() + "isn't available at that time.");
+            return false;
         }
         // if (!room.isAvailable(startDateTime, duration)) {
         //     System.out.println("The room isn't available");
+        //     return false;
         // }
 
         // assim pode ser um unico try-catch

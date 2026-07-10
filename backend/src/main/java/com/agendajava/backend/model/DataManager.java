@@ -18,6 +18,7 @@ public class DataManager implements Persistable {
 
     public DataManager() {
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.findAndRegisterModules();
     }
 
     public String getUsersFile() {
