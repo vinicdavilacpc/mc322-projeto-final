@@ -24,9 +24,4 @@ public class BackendApplication {
 		SpringApplication.run(BackendApplication.class, args);
 	}
 
-    /***
-     * Algoritmo que agenda cirurgias de acordo com uma fila de prioridade
-     * @return
-     */
-    public void surgeryScheduler(ArrayList<Surgery> priorityLine, ArrayList<SurgeryRoom> rooms) {}
 }

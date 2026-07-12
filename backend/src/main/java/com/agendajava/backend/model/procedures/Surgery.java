@@ -11,6 +11,7 @@ import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
 
 public class Surgery extends Procedure {
+    private Doctor doctor;
     int roomID;    // ID da sala alocada 
     int blockTime; // Bloco de horário alocado
 
@@ -32,7 +33,7 @@ public class Surgery extends Procedure {
     // Obs: Specialty e Priority são do tipo Enum
 
     public Surgery (String name, LocalDateTime dateTime, Duration dur, Patient p, Doctor d) {
-        super(name, dateTime, dur, p, d);
+        super(name, dateTime, dur, p);
         /* this.estimatedDuration = a1;    
         this.turnoverTime = a2;         
         this.clinicalPriority = a3;     
@@ -44,6 +45,7 @@ public class Surgery extends Procedure {
         this.priority = a9;                
         this.icuNecessity = a10; */
         // DEFINIÇÃO DOS OUTROS ATRIBUTOS!!!
+        this.doctor = d;
     }
 
     public void insertInPriorityLine(ArrayList<Surgery> priorityLine) {

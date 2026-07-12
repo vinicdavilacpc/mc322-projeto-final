@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.TreeMap;
 
-import com.agendajava.backend.exceptions.SchedulingConflictException;
+import com.agendajava.backend.exceptions.SchedulingConflict;
 import com.agendajava.backend.interfaces.Schedulable;
 import com.agendajava.backend.model.procedures.Procedure;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -50,11 +50,13 @@ public class Patient extends User implements Schedulable {
         TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
 
         if (!isAvailable(startDateTime, duration)) {
-            throw new SchedulingConflictException ( // Ver como criar exception!!!
+            throw new SchedulingConflict ( // Ver como criar exception!!!
                 "Horário indisponível!"
             );
         } 
 
         daymap.put(startTime, procedure);
     }
+
+    public void cancel(Procedure procedure) {}
 }
