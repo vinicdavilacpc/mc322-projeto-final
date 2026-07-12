@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
 
 @JsonTypeInfo(
@@ -22,15 +21,13 @@ public abstract class Procedure {
     private String name;
     private LocalDateTime startDateTime;
     private Duration duration;
-    private Doctor doctorInCharge; // Médico responsável (principal médico envolvido)
     private Patient patient;
 
-    public Procedure(String name, LocalDateTime time, Duration duration2, Patient patient, Doctor doctor) {
+    public Procedure(String name, LocalDateTime startDateTime, Duration duration, Patient patient) {
         this.name = name;
-        this.startDateTime = time;
-        this.duration = duration2;
+        this.startDateTime = startDateTime;
+        this.duration = duration;
         this.patient = patient;
-        this.doctorInCharge = doctor;
     }
 
     public String getName() {
@@ -47,10 +44,6 @@ public abstract class Procedure {
 
     public Patient getPatient() {
         return this.patient;
-    }
-
-    public Doctor getDoctor() {
-        return this.doctorInCharge;
     }
 
     public LocalDateTime getEndDateTime() {
