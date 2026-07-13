@@ -12,44 +12,41 @@ public class Authenticator implements Authenticable {
         User user = dataManager.findOne(
             dataManager.getUsersFile(), 
             User.class, 
-            u -> u.getEmail().equals(email));
+            u -> u.getEmail().equals(email) && u.getPassword().equals(password));
         
         if (user == null) {
-            throw new InvalidLogin("Invalid email or password.");
+            throw new InvalidLogin("Invalid email or password");
         } 
 
         return user; 
     }
 
-    public User register(String name, String email, String password, String role, DataManager dataManager) {
+    public User register(String name, String email, String password, String role, String specialty, DataManager dataManager) {
         if (userExists(email, dataManager)) {
-            throw new UserAlreadyExists("A user with this email already exists.");
+            throw new UserAlreadyExists("Email already registered");
         } 
 
         User user = null;
 
-        // checagem do role do usuario para instanciar o objeto certo
         if (role.equalsIgnoreCase("doctor")) {
-            user = new Doctor(name, email, password, null);
+            user = new Doctor(name, email, password, specialty);
         } 
         if (role.equalsIgnoreCase("patient")) {
             user = new Patient(name, email, password);
         }
 
         dataManager.add(dataManager.getUsersFile(), user);
-        return user;
-        
+
+        return user;    
     }
 
     public boolean userExists(String email, DataManager dataManager) {
-        User user = dataManager.findOne(
-            dataManager.getUsersFile(), 
-            User.class, 
-            u -> u.getEmail().equals(email));
+        User user = dataManager.findOne(dataManager.getUsersFile(), User.class, u -> u.getEmail().equals(email));
 
         if (user != null) {
             return true;
-        } else {
+        } 
+        else {
             return false;
         }
     }
