@@ -7,7 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.TreeMap;
 
-import com.agendajava.backend.exceptions.SchedulingConflictException;
+import com.agendajava.backend.exceptions.SchedulingConflict;
 import com.agendajava.backend.interfaces.Schedulable;
 import com.agendajava.backend.model.Equipment;
 import com.agendajava.backend.model.procedures.Procedure;
@@ -47,7 +47,7 @@ public class SurgeryRoom extends Room implements Schedulable {
         TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
 
         if (!isAvailable(startDateTime, duration)) {
-            throw new SchedulingConflictException ( // Ver como criar exception!!!
+            throw new SchedulingConflict ( 
                 "Horário indisponível!"
             );
         } 

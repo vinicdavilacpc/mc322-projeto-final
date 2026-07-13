@@ -1,6 +1,7 @@
 package com.agendajava.backend.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.time.Duration;
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.ProcedureDoesNotExist;
@@ -11,6 +12,7 @@ import com.agendajava.backend.model.procedures.Appointment;
 import com.agendajava.backend.model.procedures.Examination;
 import com.agendajava.backend.model.procedures.Surgery;
 import com.agendajava.backend.model.rooms.ExaminationRoom;
+import com.agendajava.backend.model.rooms.SurgeryRoom;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
 import com.agendajava.backend.model.users.User;
@@ -19,6 +21,14 @@ public class Manager {
     private User user;
     private DataManager dataManager;
     private Authenticator authenticator;
+
+	public enum Specialty {
+        CARDIOLOGIA, NEUROLOGIA, OFTALMOLOGIA, ORTOPEDIA; // Especialidades que constam na clínica!
+    }
+
+    public enum Priority {
+        ELETIVA, URGENCIA, EMERGENCIA;
+    }
 
     public Manager() {
         this.dataManager = new DataManager();
