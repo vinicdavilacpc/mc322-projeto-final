@@ -64,6 +64,4 @@ public class Doctor extends User implements Schedulable {
 
         daymap.put(startTime, procedure);
     }
-
-    public void cancel(Procedure procedure) {}
 }
