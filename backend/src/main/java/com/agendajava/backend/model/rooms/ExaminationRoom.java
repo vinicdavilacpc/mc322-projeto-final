@@ -47,7 +47,8 @@ public class ExaminationRoom extends Room implements Schedulable {
         TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
 
         if (!isAvailable(startDateTime, duration)) {
-            throw new SchedulingConflict ( // Ver como criar exception!!!
+          
+            throw new SchedulingConflict ( 
                 "Horário indisponível!"
             );
         } 

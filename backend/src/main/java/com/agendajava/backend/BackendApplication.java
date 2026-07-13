@@ -12,14 +12,6 @@ import com.agendajava.backend.model.rooms.SurgeryRoom;
 @SpringBootApplication
 public class BackendApplication {
 
-	public enum Specialty {
-        CARDIOLOGIA, DERMATOLOGIA, GINECOLOGIA, NEUROLOGIA, OFTALMOLOGIA, ORTOPEDIA, PEDIATRIA; // Pode ser alterado!
-    }
-
-    public enum Priority {
-        ELETIVA, URGENCIA, EMERGENCIA; // Pode ser alterado!
-    }
-
 	public static void main(String[] args) {
 		SpringApplication.run(BackendApplication.class, args);
 	}

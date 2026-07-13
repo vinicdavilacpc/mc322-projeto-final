@@ -1,0 +1,40 @@
+package com.agendajava.backend.model;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.agendajava.backend.model.Manager.Specialty;
+import com.agendajava.backend.model.users.Doctor;
+
+public class DoctorManager {
+    private Map<Specialty, List<Doctor>> doctors = new HashMap<>();
+    private Map<Specialty, List<Doctor>> surgeonDoctors = new HashMap<>();
+
+    public DoctorManager(List<Specialty> specialties) {
+        for (int i = 0; i < specialties.size(); i++) 
+            doctors.put(specialties.get(i), new ArrayList<>());
+        for (int i = 0; i < specialties.size(); i++) 
+            surgeonDoctors.put(specialties.get(i), new ArrayList<>());
+    }
+
+    public List<Doctor> getDoctorsOf(Specialty specialty) {
+        return this.doctors.get(specialty);
+    }
+
+    public List<Doctor> getSurgeonsOf(Specialty specialty) {
+        return this.surgeonDoctors.get(specialty);
+    }
+
+    public void addDoctorOf(Doctor newDoctor) {
+        this.doctors.get(newDoctor.getSpecialty()).add(newDoctor);
+        if (newDoctor.isSurgeon())
+            addSurgeonOf(newDoctor.getSpecialty());
+    }
+
+    public void addSurgeonOf(Doctor newSurgeon) {
+        this.doctors.get(newSurgeon.getSpecialty()).add(newSurgeon);
+    }
+
+}
