@@ -3,6 +3,7 @@ package com.agendajava.backend.model;
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.UserAlreadyExists;
 import com.agendajava.backend.interfaces.Authenticable;
+import com.agendajava.backend.model.Manager.Specialty;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
 import com.agendajava.backend.model.users.User;
@@ -21,7 +22,7 @@ public class Authenticator implements Authenticable {
         return user; 
     }
 
-    public User register(String name, String email, String password, String role, String specialty, DataManager dataManager) {
+    public User register(String name, String email, String password, String role, Specialty specialty, DataManager dataManager) {
         if (userExists(email, dataManager)) {
             throw new UserAlreadyExists("Email already registered");
         } 

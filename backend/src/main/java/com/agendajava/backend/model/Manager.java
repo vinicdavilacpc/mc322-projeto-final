@@ -2,12 +2,14 @@ package com.agendajava.backend.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.time.Duration;
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.ProcedureDoesNotExist;
 import com.agendajava.backend.exceptions.SchedulingConflict;
 import com.agendajava.backend.exceptions.UserAlreadyExists;
 import com.agendajava.backend.exceptions.UserNotLoggedIn;
+import com.agendajava.backend.exceptions.WrongUser;
 import com.agendajava.backend.model.procedures.Appointment;
 import com.agendajava.backend.model.procedures.Examination;
 import com.agendajava.backend.model.procedures.Surgery;
@@ -21,9 +23,11 @@ public class Manager {
     private User user;
     private DataManager dataManager;
     private Authenticator authenticator;
+    private SurgeryManager surgeryManager;
+    private DoctorManager doctorManager;
 
 	public enum Specialty {
-        CARDIOLOGIA, NEUROLOGIA, OFTALMOLOGIA, ORTOPEDIA; // Especialidades que constam na clínica!
+        ANESTESIOLOGIA, CARDIOLOGIA, NEUROLOGIA, OFTALMOLOGIA, ORTOPEDIA; // Especialidades que constam na clínica!
     }
 
     public enum Priority {
@@ -33,22 +37,24 @@ public class Manager {
     public Manager() {
         this.dataManager = new DataManager();
         this.authenticator = new Authenticator();
+        this.surgeryManager = new SurgeryManager();
+        this.doctorManager = new DoctorManager(dataManager);
         this.user = null;
     }
 
     public String loginSuccessful(String email, String password) {
         try {
-            this.user = authenticator.login(email, password, dataManager);
+            user = authenticator.login(email, password, dataManager);
         } 
         catch (InvalidLogin e) {
             return e.getMessage();
         }
-        return "Login sucessful";
+        return "Login sucessful"; 
     }
 
-    public String registrationSuccessful(String name, String email, String password, String role, String specialty, DataManager dataManager) {
+    public String registrationSuccessful(String name, String email, String password, String role, Specialty specialty, DataManager dataManager) {
         try {
-            this.user = authenticator.register(name, email, password, role, specialty, dataManager);
+            user = authenticator.register(name, email, password, role, specialty, dataManager);
         }
         catch (UserAlreadyExists e) {
             return e.getMessage();
@@ -58,7 +64,7 @@ public class Manager {
 
     public String appointmentScheduled(String name, LocalDateTime startDateTime, Duration duration, Doctor doctor) {
         try {
-            if (this.user == null) {
+            if (user == null) {
                 throw new UserNotLoggedIn("Log in to schedule an appointment"); 
             }
         } 
@@ -68,7 +74,7 @@ public class Manager {
         
         Patient patient;
         try {
-            patient = (Patient) this.user;
+            patient = (Patient) user;
         }
         catch (ClassCastException e) {
             return "Doctors cannot schedule appointments";
@@ -91,16 +97,16 @@ public class Manager {
             return "You already have a procedure scheduled at that time";
         }
 
-        this.dataManager.add(this.dataManager.getProceduresFile(), appointment);
-        this.dataManager.update(this.dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
-        this.dataManager.update(this.dataManager.getUsersFile(), doctor, d -> d.getEmail().equals(doctor.getEmail()));
+        dataManager.add(dataManager.getProceduresFile(), appointment);
+        dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
+        dataManager.update(dataManager.getUsersFile(), doctor, d -> d.getEmail().equals(doctor.getEmail()));
         
         return "Appointment scheduled";
     }
 
     public String examinationScheduled(String name, LocalDateTime startDateTime, Duration duration, ExaminationRoom room) {
         try {
-            if (this.user == null) {
+            if (user == null) {
                 throw new UserNotLoggedIn("Log in to schedule an examination"); 
             }
         } 
@@ -110,7 +116,7 @@ public class Manager {
         
         Patient patient;
         try {
-            patient = (Patient) this.user;
+            patient = (Patient) user;
         }
         catch (ClassCastException e) {
             return "Doctors cannot schedule examinations";
@@ -133,9 +139,9 @@ public class Manager {
             return "You already have a procedure scheduled at that time";
         }
 
-        this.dataManager.add(this.dataManager.getProceduresFile(), examination);
-        this.dataManager.update(this.dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
-        this.dataManager.update(this.dataManager.getRoomsFile(), room, r -> r.getID().equals(room.getID()));
+        dataManager.add(dataManager.getProceduresFile(), examination);
+        dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
+        dataManager.update(dataManager.getRoomsFile(), room, r -> r.getID().equals(room.getID()));
         
         return "Examination scheduled";
     }
@@ -144,7 +150,7 @@ public class Manager {
 
     public String appointmentCanceled(Appointment appointment) {
         try {
-            if (this.user == null) {
+            if (user == null) {
                 throw new UserNotLoggedIn("Log in to cancel an appointment"); 
             }
         } 
@@ -155,7 +161,7 @@ public class Manager {
         Patient patient = appointment.getPatient();
         Doctor doctor = appointment.getDoctor();
         try {
-            if (this.user != patient && this.user != doctor) {
+            if (user != patient && user != doctor) {
                 throw new WrongUser("You do not have permission to cancel this examination");
             }
         }
@@ -177,16 +183,16 @@ public class Manager {
             return "This appointment could not be found";
         }
 
-        this.dataManager.delete(this.dataManager.getProceduresFile(), appointment);
-        this.dataManager.update(this.dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
-        this.dataManager.update(this.dataManager.getUsersFile(), doctor, d -> d.getEmail().equals(doctor.getEmail()));
+        dataManager.delete(dataManager.getProceduresFile(), appointment);
+        dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
+        dataManager.update(dataManager.getUsersFile(), doctor, d -> d.getEmail().equals(doctor.getEmail()));
 
         return "Appointment canceled";
     }
 
     public String examinationCanceled(Examination examination) {
         try {
-            if (this.user == null) {
+            if (user == null) {
                 throw new UserNotLoggedIn("Log in to cancel an examination"); 
             }
         } 
@@ -196,7 +202,7 @@ public class Manager {
 
         Patient patient;
         try {
-            patient = (Patient) this.user;
+            patient = (Patient) user;
         }
         catch (ClassCastException e) {
             return "Doctors cannot cancel examinations";
@@ -226,20 +232,13 @@ public class Manager {
             return "This examination could not be found";
         }
 
-        this.dataManager.delete(this.dataManager.getProceduresFile(), examination);
-        this.dataManager.update(this.dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
-        this.dataManager.update(this.dataManager.getRoomsFile(), room, r -> r.getID().equals(room.getID()));
+        dataManager.delete(dataManager.getProceduresFile(), examination);
+        dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
+        dataManager.update(dataManager.getRoomsFile(), room, r -> r.getID().equals(room.getID()));
 
         return "Examination canceled";
     }
 
     public String surgeryCanceled(Surgery surgery);
-
-    /***
-     * Algoritmo que agenda cirurgias de acordo com uma fila de prioridade
-     * @return
-     */
-    public void surgeryScheduler(ArrayList<Surgery> priorityLine, ArrayList<SurgeryRoom> rooms) {}
-
 }
 

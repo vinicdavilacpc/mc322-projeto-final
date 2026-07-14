@@ -48,8 +48,6 @@ public class Surgery extends Procedure {
         this.doctor = d;
     }
 
-    public void insertInPriorityLine(ArrayList<Surgery> priorityLine) {
-        // Pensar no algoritmo de inserção! (definição de prioridades)
-    }
+    
 
 }

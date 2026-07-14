@@ -12,7 +12,7 @@ public class DoctorManager {
     private Map<Specialty, List<Doctor>> doctors = new HashMap<>();
     private Map<Specialty, List<Doctor>> surgeonDoctors = new HashMap<>();
 
-    public DoctorManager(List<Specialty> specialties) {
+    public DoctorManager(DataManager dataManager) {
         for (int i = 0; i < specialties.size(); i++) 
             doctors.put(specialties.get(i), new ArrayList<>());
         for (int i = 0; i < specialties.size(); i++) 
@@ -30,10 +30,10 @@ public class DoctorManager {
     public void addDoctorOf(Doctor newDoctor) {
         this.doctors.get(newDoctor.getSpecialty()).add(newDoctor);
         if (newDoctor.isSurgeon())
-            addSurgeonOf(newDoctor.getSpecialty());
+            addSurgeon(newDoctor);
     }
 
-    public void addSurgeonOf(Doctor newSurgeon) {
+    public void addSurgeon(Doctor newSurgeon) {
         this.doctors.get(newSurgeon.getSpecialty()).add(newSurgeon);
     }
 

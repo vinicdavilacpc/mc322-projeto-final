@@ -14,7 +14,7 @@ public class Appointment extends Procedure {
     @JsonCreator
     public Appointment(
             @JsonProperty("name") String name, 
-            @JsonProperty("starDateTime") LocalDateTime startDateTime, // Usa o nome exato do teu getter
+            @JsonProperty("starDateTime") LocalDateTime startDateTime,
             @JsonProperty("duration") Duration duration, 
             @JsonProperty("patient") Patient patient, 
             @JsonProperty("doctor") Doctor doctor) {

@@ -9,12 +9,12 @@ import com.agendajava.backend.model.users.Patient;
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME, 
     include = JsonTypeInfo.As.PROPERTY, 
-    property = "tipo"
+    property = "type"
 )
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = Appointment.class, name = "consulta"),
-    @JsonSubTypes.Type(value = Examination.class, name = "exame"),
-    @JsonSubTypes.Type(value = Surgery.class, name = "cirurgia")
+    @JsonSubTypes.Type(value = Appointment.class, name = "appointment"),
+    @JsonSubTypes.Type(value = Examination.class, name = "examination"),
+    @JsonSubTypes.Type(value = Surgery.class, name = "surgery")
 })
 
 public abstract class Procedure {
@@ -23,7 +23,7 @@ public abstract class Procedure {
     private Duration duration;
     private Patient patient;
 
-    public Procedure(String name, LocalDateTime startDateTime, Duration duration, Patient patient) {
+    public Procedure(String name, LocalDateTime startDateTime, Duration duration, Patient patient) { // TO DO: tornar o nome padronizado e automático
         this.name = name;
         this.startDateTime = startDateTime;
         this.duration = duration;

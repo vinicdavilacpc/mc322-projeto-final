@@ -8,60 +8,31 @@ import java.util.TreeMap;
 
 import com.agendajava.backend.exceptions.SchedulingConflict;
 import com.agendajava.backend.interfaces.Schedulable;
+import com.agendajava.backend.model.Manager.Specialty;
 import com.agendajava.backend.model.procedures.Procedure;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Doctor extends User implements Schedulable {
-    String specialty;
+public class Doctor extends User {
+    Specialty specialty; // Especialidade do médico
+    boolean surgeon;     // Diz se um médico é cirurgião de sua especialidade (true) ou não (false)
 
     @JsonCreator
     public Doctor(@JsonProperty("name") String name, 
                   @JsonProperty("email") String email, 
                   @JsonProperty("password") String password,
-                  @JsonProperty("specialty") String specialty) { // <--- Atributo extra!
+                  @JsonProperty("specialty") Specialty specialty,
+                  @JsonProperty("surgeon") boolean surgeon) {
         super(name, email, password);
         this.specialty = specialty;
+        this.surgeon = surgeon;
     }
 
-    public String getSpecialty() {
+    public Specialty getSpecialty() {
         return this.specialty;
     }
 
-    public boolean isAvailable(LocalDateTime startDateTime, Duration duration) {
-        LocalDate date = startDateTime.toLocalDate();
-        LocalTime startTime = startDateTime.toLocalTime();
-
-        this.getCalendar().computeIfAbsent(date, d -> new TreeMap<>());
-        TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
-
-        if (daymap.isEmpty()) // Não existe nenhum procedimento agendado nesse dia!
-            return true;
-
-        LocalTime priorProcedureStartTime = daymap.floorKey(startTime); // Horário de início do procedimento que começa antes do novo
-        if (priorProcedureStartTime != null && daymap.get(priorProcedureStartTime).overlapsWith(startDateTime, duration))
-            return false;
-
-        LocalTime nextProcedureStartTime = daymap.ceilingKey(startTime); // Horário de início do procedimento que começa depois do novo
-        if (nextProcedureStartTime != null && daymap.get(nextProcedureStartTime).overlapsWith(startDateTime, duration))
-            return false;
-
-        return true;
-    }
-
-    public void schedule(LocalDateTime startDateTime, Duration duration, Procedure procedure) {
-        LocalDate date = startDateTime.toLocalDate();
-        LocalTime startTime = startDateTime.toLocalTime();
-
-        this.getCalendar().computeIfAbsent(date, d -> new TreeMap<>());
-        TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
-
-        if (!isAvailable(startDateTime, duration)) {
-            throw new SchedulingConflict ( // Ver como criar exception!!!
-                "Horário indisponível!"
-            );
-        } 
-
-        daymap.put(startTime, procedure);
+    public boolean isSurgeon() {
+        return this.surgeon;
     }
 }
