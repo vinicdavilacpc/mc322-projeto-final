@@ -16,9 +16,9 @@ public class Room {
     private Calendar calendar;
     private List<Equipment> equipments = new ArrayList<>();
 
-    public Room(String name, List<Equipment> equipments) {
+    public Room(String name) {
         this.name = name;
-        this.equipments = equipments;
+        // this.equipments = equipments;
     }
 
     /* Já retorna o calendário em um formato acessável! */
