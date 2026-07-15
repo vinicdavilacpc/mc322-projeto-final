@@ -5,30 +5,30 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.agendajava.backend.BackendApplication.Priority;
-import com.agendajava.backend.BackendApplication.Specialty;
+import com.agendajava.backend.model.Manager.Priority;
+import com.agendajava.backend.model.Manager.Specialty;
+import com.agendajava.backend.model.TimeBlock;
+import com.agendajava.backend.model.rooms.SurgeryRoom;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
 
 public class Surgery extends Procedure {
     private Doctor doctor;
-    int roomID;    // ID da sala alocada 
-    int blockTime; // Bloco de horário alocado
+    private SurgeryRoom room;    // ID da sala alocada 
+    private TimeBlock timeBlock; // Bloco de horário alocado
 
     // Atributos quantitativos
-    int estimatedDuration;    // Duração estimada (em minutos)
-    int turnoverTime;         // Tempo de limpeza e preparação da sala (em minutos) --> preset
-    int clinicalPriority;     // Score de 1 a 5 com a prioridade da cirurgia
-    int estimatedRecoverTime; // Tempo de recuperação (exige 1 leito de recuperação por esse período)
-    LocalDateTime limitDate;  // Prazo limite para a cirurgia
+    private Duration estimatedDuration;    // Duração estimada (em minutos)
+    private int turnoverTime;         // Tempo de limpeza e preparação da sala (em minutos) --> preset
+    private int clinicalPriority;     // Score de 1 a 5 com a prioridade da cirurgia
+    private int estimatedRecoverTime; // Tempo de recuperação (exige 1 leito de recuperação por esse período)
+    private LocalDateTime limitDate;  // Prazo limite para a cirurgia
 
     // Atributos qualitativos
-    int surgeonID;                    // ID do cirurgião responsável
-    Specialty specialty;              // Especialidade da cirurgia
-    List<String> necessaryEquipments; // Equipamentos necessários na sala
-    Priority priority;                // Prioridade da cirurgia
-    boolean icuNecessity;             // Necessidade de UTI pós-operatória
-    boolean anestesistNecessity;      // Necessidade de anestesista
+    private Doctor surgeon;                    // ID do cirurgião responsável
+    private Specialty specialty;              // Especialidade da cirurgia
+    private Priority priority;                // Prioridade da cirurgia
+    private boolean icuNecessity;             // Necessidade de UTI pós-operatória
 
     // Obs: Specialty e Priority são do tipo Enum
 
@@ -48,6 +48,18 @@ public class Surgery extends Procedure {
         this.doctor = d;
     }
 
-    
+    public boolean isUrgent() {
+        if (priority.equals(Priority.URGENCIA) || priority.equals(Priority.EMERGENCIA))
+            return true;
+        return false;
+    }
+
+    public LocalDateTime getLimitDate() {
+        return limitDate;
+    }
+
+    public boolean needsICU() {
+        return icuNecessity;
+    }
 
 }

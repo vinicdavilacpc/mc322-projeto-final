@@ -61,7 +61,7 @@ public class SurgeryManager {
         for (int i = 0; i < Specialty.values().length; i++) {
             List<Surgery> surgeries = this.priorityLine.get(Specialty.values()[i]);
             for (int j = 0; j < surgeries.size(); j++) {
-                Surgery surgery = surgeries.get(j); // To be continued...
+                Surgery surgery = surgeries.get(j); 
             }
         }
     }
