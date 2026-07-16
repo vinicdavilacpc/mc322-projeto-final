@@ -40,6 +40,14 @@ public class Manager {
         this.user = null;
     }
 
+    public Doctor getDoctorByEmail(String email) {
+        User foundUser = dataManager.findOne(dataManager.getUsersFile(), User.class, u -> u.getEmail().equals(email));
+        if (foundUser instanceof Doctor) {
+            return (Doctor) foundUser;
+        }
+        return null;
+    }
+
     public String loginSuccessful(String email, String password) {
         try {
             user = authenticator.login(email, password, dataManager);
