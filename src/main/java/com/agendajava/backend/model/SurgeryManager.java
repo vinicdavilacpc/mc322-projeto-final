@@ -1,9 +1,9 @@
 package com.agendajava.backend.model;
 
-import java.util.List;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.agendajava.backend.model.Manager.Specialty;
@@ -19,8 +19,8 @@ public class SurgeryManager {
     // Incluir blocos de horários!!!
 
     public SurgeryManager() {
-        for (int i = 0; i < Specialty.values().size(); i++) 
-            priorityLine.put(Specialty.values().get(i), new ArrayList<>());
+        for (int i = 0; i < Specialty.values().length; i++) 
+             priorityLine.put(Specialty.values()[i], new ArrayList<>());
     }
 
     public List<Surgery> getPLineOf(Specialty specialty) {

@@ -12,13 +12,22 @@ import com.agendajava.backend.model.Equipment;
 import com.agendajava.backend.model.procedures.Procedure;
 
 public class Room {
-    private String name;
+    private final String name;
+    private int ID;
     private Calendar calendar;
     private List<Equipment> equipments = new ArrayList<>();
 
     public Room(String name, List<Equipment> equipments) {
         this.name = name;
         this.equipments = equipments;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public int getID() {
+        return this.ID;
     }
 
     /* Já retorna o calendário em um formato acessável! */

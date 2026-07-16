@@ -1,9 +1,8 @@
 package com.agendajava.backend.model;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.time.Duration;
+import java.time.LocalDateTime;
+
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.ProcedureDoesNotExist;
 import com.agendajava.backend.exceptions.SchedulingConflict;
@@ -14,7 +13,6 @@ import com.agendajava.backend.model.procedures.Appointment;
 import com.agendajava.backend.model.procedures.Examination;
 import com.agendajava.backend.model.procedures.Surgery;
 import com.agendajava.backend.model.rooms.ExaminationRoom;
-import com.agendajava.backend.model.rooms.SurgeryRoom;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
 import com.agendajava.backend.model.users.User;
@@ -141,7 +139,8 @@ public class Manager {
 
         dataManager.add(dataManager.getProceduresFile(), examination);
         dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
-        dataManager.update(dataManager.getRoomsFile(), room, r -> r.getID().equals(room.getID()));
+        // dataManager.update(dataManager.getRoomsFile(), room, r -> r.getID().equals(room.getID()));
+        dataManager.update(dataManager.getRoomsFile(), room, r -> r.getName().equals(room.getName())); // Botei getName aqui só pra funcionar por enquanto
         
         return "Examination scheduled";
     }
@@ -236,7 +235,9 @@ public class Manager {
 
         dataManager.delete(dataManager.getProceduresFile(), examination);
         dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
-        dataManager.update(dataManager.getRoomsFile(), room, r -> r.getID().equals(room.getID()));
+        // dataManager.update(dataManager.getRoomsFile(), room, r -> r.getID().equals(room.getID()));
+        dataManager.update(dataManager.getRoomsFile(), room, r -> r.getName().equals(room.getName())); // Botei getName aqui só pra funcionar por enquanto
+
 
         return "Examination canceled";
     }

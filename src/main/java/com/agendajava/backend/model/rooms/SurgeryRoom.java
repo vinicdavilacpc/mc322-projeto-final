@@ -54,4 +54,9 @@ public class SurgeryRoom extends Room implements Schedulable {
 
         daymap.put(startTime, procedure);
     }
+
+    @Override
+    public void cancel(Procedure procedure) {
+        // TODO: Implementar a lógica de cancelamento do calendário depois
+    }
 }
