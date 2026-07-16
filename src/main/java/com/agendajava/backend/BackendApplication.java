@@ -8,16 +8,18 @@ import com.agendajava.backend.model.rooms.SurgeryRoom;
 
 public class BackendApplication extends Application {
 
-    // O método main serve apenas para dar o "start" no JavaFX
     public static void main(String[] args) {
         launch(args);
-    } // <-- O main precisa fechar aqui!
+    }
 
-    // O método start é obrigatório e precisa ficar no nível da classe
     @Override
-    public void start(Stage primaryStage) {
-        // Aqui é onde você vai começar a construir as telas (Scenes)
-        primaryStage.setTitle("Agenda Java");
+    public void start(Stage primaryStage) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(BackendApplication.class.getResource("/com/agendajava/view/login.fxml"));
+        
+        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        
+        primaryStage.setTitle("Agenda Java - Login");
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 }
