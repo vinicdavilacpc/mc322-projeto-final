@@ -16,7 +16,7 @@ public class ICURoom extends Room {
         for (int i = 0; i < bedNumber; i++) {
             bedCalendar = bedsCalendars.get(i)
             if (bedIsAvailable(bedCalendar, startDateTime, duration))
-                return true
+                return true;
         }
         return false;
     }

@@ -147,7 +147,30 @@ public class Manager {
         return "Examination scheduled";
     }
 
-    public String surgeryScheduled();
+    public String surgeryCreated(String name, Patient patient, Specialty specialty, Priority priority, boolean icuNecessity, 
+                                Duration estimatedDuration, int clinicalPriority, Duration estimatedRecoverDuration, LocalDate limitDate) {
+        try {
+            if (user == null) {
+                throw new UserNotLoggedIn("Log in to create a surgery"); 
+            }
+        } 
+        catch (UserNotLoggedIn e) {
+            return e.getMessage();
+        }
+        
+        Doctor doctor;
+        try {
+            doctor = (Doctor) user;
+        }
+        catch (ClassCastException e) {
+            return "Patients cannot create surgeries";
+        }
+
+        Surgery surgery = new Surgery(name, patient, specialty, priority, icuNecessity, estimatedDuration, clinicalPriority, estimatedRecoverDuration, limitDate);
+        surgeryScheduler.addToPriorityLine(surgery);
+        
+        return "Surgery created";
+    };
 
     public String appointmentCanceled(Appointment appointment) {
         try {

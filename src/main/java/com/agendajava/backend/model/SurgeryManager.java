@@ -50,6 +50,24 @@ public class SurgeryManager {
         return this.priorityLine.get(specialty);
     }
 
+    public void addToPriorityLine(Surgery surgery) {
+        pLine = priorityLine.get(surgery.getSpecialty()); // Fila de prioridade da especialidade
+        // Prioridade: Emergência > Urgência > Eletiva
+
+        if (pLine.size() == 0) { // Fila vazia
+            pLine.add(surgery);
+        } else {
+            int i;
+            for (i = (pLine.size() - 1); i >= 0; i--) {
+                if (surgery.getClinicalPriority() <= pLine.get(i).getClinicalPriority()) { // Existe uma prioridade maior à frente
+                    pLine.add((i + 1), surgery);
+                    return;
+                }
+            }
+            pLine.add(i, surgery); // A nova cirurgia tem a prioridade máxima
+        }
+    }
+
     /***
      * Algoritmo que agenda cirurgias de acordo com uma fila de prioridade
      * @return
