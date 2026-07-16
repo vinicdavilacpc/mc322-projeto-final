@@ -2,11 +2,18 @@ package com.agendajava.controller;
 
 import com.agendajava.backend.model.Manager;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class LoginController {
+
     @FXML
     private TextField emailInput;
 
@@ -25,12 +32,27 @@ public class LoginController {
         String resultado = manager.loginSuccessful(email, senha);
 
         if (resultado.equals("Login sucessful")) {
-            mensagemErro.setText("Sucesso! Entrando no sistema...");
-            mensagemErro.setStyle("-fx-text-fill: green;");
-            
+            irParaDashboard();
         } else {
             mensagemErro.setText(resultado);
             mensagemErro.setStyle("-fx-text-fill: red;");
+        }
+    }
+
+    private void irParaDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agendajava/view/dashboard.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) emailInput.getScene().getWindow();
+
+            Scene scene = new Scene(root, 800, 600);
+            stage.setScene(scene);
+            stage.setTitle("Agenda Java - Painel Principal");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            mensagemErro.setText("Erro ao carregar a tela principal.");
         }
     }
 }
