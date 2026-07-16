@@ -1,10 +1,11 @@
 package com.agendajava.backend;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-import com.agendajava.backend.model.procedures.Surgery;
-import com.agendajava.backend.model.rooms.SurgeryRoom;
+import java.io.IOException;
 
 public class BackendApplication extends Application {
 

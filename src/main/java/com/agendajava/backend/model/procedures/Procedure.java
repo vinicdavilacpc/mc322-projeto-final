@@ -11,6 +11,7 @@ import com.agendajava.backend.model.users.Patient;
     include = JsonTypeInfo.As.PROPERTY, 
     property = "type"
 )
+
 @JsonSubTypes({
     @JsonSubTypes.Type(value = Appointment.class, name = "appointment"),
     @JsonSubTypes.Type(value = Examination.class, name = "examination"),

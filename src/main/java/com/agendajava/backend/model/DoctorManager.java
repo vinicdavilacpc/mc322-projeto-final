@@ -13,10 +13,11 @@ public class DoctorManager {
     private Map<Specialty, List<Doctor>> surgeonDoctors = new HashMap<>();
 
     public DoctorManager(DataManager dataManager) {
-        for (int i = 0; i < specialties.size(); i++) 
-            doctors.put(specialties.get(i), new ArrayList<>());
-        for (int i = 0; i < specialties.size(); i++) 
-            surgeonDoctors.put(specialties.get(i), new ArrayList<>());
+        for (int i = 0; i < Specialty.values().length; i++) 
+             doctors.put(Specialty.values()[i], new ArrayList<>());
+
+        for (int i = 0; i < Specialty.values().length; i++) 
+             surgeonDoctors.put(Specialty.values()[i], new ArrayList<>());
     }
 
     public List<Doctor> getDoctorsOf(Specialty specialty) {

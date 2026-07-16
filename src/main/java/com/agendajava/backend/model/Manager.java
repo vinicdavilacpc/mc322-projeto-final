@@ -146,7 +146,9 @@ public class Manager {
         return "Examination scheduled";
     }
 
-    public String surgeryScheduled();
+    public String surgeryScheduled() {
+        return "Em desenvolvimento";
+    }
 
     public String appointmentCanceled(Appointment appointment) {
         try {
@@ -239,6 +241,8 @@ public class Manager {
         return "Examination canceled";
     }
 
-    public String surgeryCanceled(Surgery surgery);
+    public String surgeryCanceled(Surgery surgery) {
+        return "Em desenvolvimento";
+    }
 }
 
