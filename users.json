@@ -1,0 +1,8 @@
+[
+  {
+    "type": "patient",
+    "name": "Paciente de Teste",
+    "email": "paciente@email.com",
+    "password": "123"
+  }
+]

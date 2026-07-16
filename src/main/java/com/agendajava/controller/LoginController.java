@@ -1,6 +1,9 @@
 package com.agendajava.controller;
 
+import java.io.IOException;
+
 import com.agendajava.backend.model.Manager;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,8 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class LoginController {
 
@@ -44,8 +45,10 @@ public class LoginController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agendajava/view/dashboard.fxml"));
             Parent root = loader.load();
 
-            Stage stage = (Stage) emailInput.getScene().getWindow();
+            DashboardController dashboardController = loader.getController();
+            dashboardController.setManager(this.manager);
 
+            Stage stage = (Stage) emailInput.getScene().getWindow();
             Scene scene = new Scene(root, 800, 600);
             stage.setScene(scene);
             stage.setTitle("Agenda Java - Painel Principal");
