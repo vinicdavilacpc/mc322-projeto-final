@@ -1,8 +1,8 @@
 package com.agendajava.backend.model.procedures;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.agendajava.backend.model.Manager.Priority;
 import com.agendajava.backend.model.Manager.Specialty;
@@ -13,22 +13,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Surgery extends Procedure {
-    // Atributos agendados
-    private Doctor surgeon;              // Cirurgião responsável
-    private SurgeryRoom room;            // Sala de cirurgia alocada
-    private LocalDateTime startDateTime; // Horário de início da cirurgia
+    private Doctor surgeon;              
+    private SurgeryRoom room;            
+    
+    private Specialty specialty;  
+    private Priority priority;    
+    private boolean icuNecessity; 
 
-    // Atributos qualitativos
-    private Specialty specialty;  // Especialidade da cirurgia
-    private Priority priority;    // Prioridade da cirurgia
-    private boolean icuNecessity; // Necessidade de UTI pós-operatória
-    // Obs: Specialty e Priority são do tipo Enum
+    public static final Duration TURNOVER_TIME = Duration.ofMinutes(30); 
 
-    // Atributos quantitativos
-    public Duration turnoverTime = Duration.ofMinutes(30); // Tempo de limpeza e preparação da sala médio para uma clínica
-    private int clinicalPriority;                          // Score de 1 a 3 com a prioridade da cirurgia (esse score é um complemento à Priority)
-    private Duration estimatedRecoverDuration;             // Tempo de recuperação (exige 1 leito de recuperação por esse período)
-    private LocalDate limitDate;                           // Prazo limite para a cirurgia
+    private int clinicalPriority;                          
+    private Duration estimatedRecoverDuration;             
+    private LocalDate limitDate;                           
 
     @JsonCreator
     public Surgery (
@@ -41,9 +37,8 @@ public class Surgery extends Procedure {
             @JsonProperty("clinicalPriority") int clinicalPriority,
             @JsonProperty("estimatedRecoverDuration") Duration estimatedRecoverDuration,
             @JsonProperty("limitDate") LocalDate limitDate) {
-
-        Duration estimatedDuration = duration.plus(turnoverTime); // A duração estimada total da cirurgia envolve o tempo de turnover
-        super(name, null, estimatedDuration, patient);
+        
+        super(name, null, duration.plus(TURNOVER_TIME), patient);
         this.specialty = specialty;
         this.priority = priority;
         this.icuNecessity = icuNecessity;
@@ -53,22 +48,18 @@ public class Surgery extends Procedure {
     }
 
     public boolean isEmergency() {
-        if (priority.equals(Priority.EMERGENCIA))
-            return true;
-        return false;
+        return priority == Priority.EMERGENCIA;
     }
 
     public boolean isUrgency() {
-        if (priority.equals(Priority.URGENCIA))
-            return true;
-        return false;
+        return priority == Priority.URGENCIA;
     }
 
     public Specialty getSpecialty() {
         return specialty;
     }
 
-    public LocalDateTime getLimitDate() {
+    public LocalDate getLimitDate() {
         return limitDate;
     }
 
@@ -84,6 +75,10 @@ public class Surgery extends Procedure {
         return clinicalPriority;
     }
 
+    public Doctor getDoctor() {
+        return this.surgeon;
+    }
+
     public void setSurgeon(Doctor surgeon) {
         this.surgeon = surgeon;
     }
@@ -92,7 +87,7 @@ public class Surgery extends Procedure {
         this.room = room;
     }
 
-    public void setStart (LocalDateTime starDateTime) {
-        this.starDateTime = starDateTime;
+    public void setStart(LocalDateTime startDateTime) {
+        this.setStartDateTime(startDateTime);
     }
 }

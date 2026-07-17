@@ -13,8 +13,8 @@ import com.agendajava.backend.model.Calendar;
 import com.agendajava.backend.model.procedures.Procedure;
 
 public class ICURoom extends Room {
-    private List<Calendar> bedsCalendars;
-    private int bedNumber;               
+    private List<Calendar> bedsCalendars; 
+    private int bedNumber;                
 
     public ICURoom(String name, int bedNumber) {
         super(name);
@@ -45,8 +45,13 @@ public class ICURoom extends Room {
         }
 
         if (bedCalendar != null) {
-            bedCalendar.computeIfAbsent(date, d -> new TreeMap<>());
-            TreeMap<LocalTime, Procedure> daymap = bedCalendar.get(date);
+            bedCalendar.get().computeIfAbsent(date, d -> new TreeMap<>());
+            TreeMap<LocalTime, Procedure> daymap = bedCalendar.get().get(date);
+            
+            if (!bedIsAvailable(bedCalendar, startDateTime, duration)) {
+                throw new SchedulingConflict("Horário indisponível!");
+            }
+            
             daymap.put(startTime, procedure);
         }
     }
@@ -64,10 +69,11 @@ public class ICURoom extends Room {
     private boolean bedIsAvailable(Calendar bedCalendar, LocalDateTime startDateTime, Duration duration) {
         LocalDate date = startDateTime.toLocalDate();
         LocalTime startTime = startDateTime.toLocalTime();
-        bedCalendar.computeIfAbsent(date, d -> new TreeMap<>());
-        TreeMap<LocalTime, Procedure> daymap = bedCalendar.get(date);
+        bedCalendar.get().computeIfAbsent(date, d -> new TreeMap<>());
+        TreeMap<LocalTime, Procedure> daymap = bedCalendar.get().get(date);
         
-        if (daymap.isEmpty()) return true;
+        if (daymap.isEmpty()) 
+            return true;
         
         LocalTime priorProcedureStartTime = daymap.floorKey(startTime); 
         if (priorProcedureStartTime != null && daymap.get(priorProcedureStartTime).overlapsWith(startDateTime, duration))
