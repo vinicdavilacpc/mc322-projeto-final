@@ -9,7 +9,6 @@ import java.util.TreeMap;
 
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.ProcedureDoesNotExist;
-import com.agendajava.backend.exceptions.SchedulingConflict;
 import com.agendajava.backend.exceptions.UserAlreadyExists;
 import com.agendajava.backend.exceptions.UserNotLoggedIn;
 import com.agendajava.backend.exceptions.WrongUser;
@@ -130,67 +129,53 @@ public class Manager {
         return "Registration sucessful";
     }
 
-    public String appointmentScheduled(String name, LocalDateTime startDateTime, Duration duration, Doctor doctor) {
-        try {
-            if (user == null) {
-                throw new UserNotLoggedIn("Log in to schedule an appointment");
-            }
-        } catch (UserNotLoggedIn e) {
-            return e.getMessage();
+    public User getCurrentUser() {
+        return this.user;
+    }
+
+    public String appointmentScheduled(String name, LocalDateTime startDateTime, Duration duration, Patient patient, Doctor doctor) {
+        if (user == null) {
+            return "Log in to schedule an appointment";
         }
-        Patient patient;
-        try {
-            patient = (Patient) user;
-        } catch (ClassCastException e) {
-            return "Doctors cannot schedule appointments";
+        
+        if (!doctor.isAvailable(startDateTime, duration)) {
+            return "O médico " + doctor.getName() + " está indisponível nesse horário.";
         }
+        if (!patient.isAvailable(startDateTime, duration)) {
+            return "O paciente " + patient.getName() + " está indisponível nesse horário.";
+        }
+
         Appointment appointment = new Appointment(name, startDateTime, duration, patient, doctor);
-        try {
-            if (patient.isAvailable(startDateTime, duration))
-                doctor.schedule(startDateTime, duration, appointment);
-        } catch (SchedulingConflict e) {
-            return doctor.getName() + " is unavailable at that time";
-        }
-        try {
-            patient.schedule(startDateTime, duration, appointment);
-        } catch (SchedulingConflict e) {
-            return "You already have a procedure scheduled at that time";
-        }
+        doctor.schedule(startDateTime, duration, appointment);
+        patient.schedule(startDateTime, duration, appointment);
+        
         dataManager.add(dataManager.getProceduresFile(), appointment);
         dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
         dataManager.update(dataManager.getUsersFile(), doctor, d -> d.getEmail().equals(doctor.getEmail()));
+        
         return "Appointment scheduled";
     }
 
-    public String examinationScheduled(String name, LocalDateTime startDateTime, Duration duration, ExaminationRoom room) {
-        try {
-            if (user == null) {
-                throw new UserNotLoggedIn("Log in to schedule an examination");
-            }
-        } catch (UserNotLoggedIn e) {
-            return e.getMessage();
+    public String examinationScheduled(String name, LocalDateTime startDateTime, Duration duration, Patient patient, ExaminationRoom room) {
+        if (user == null || !(user instanceof Doctor)) {
+            return "Apenas médicos podem agendar exames.";
         }
-        Patient patient;
-        try {
-            patient = (Patient) user;
-        } catch (ClassCastException e) {
-            return "Doctors cannot schedule examinations";
+        
+        if (!room.isAvailable(startDateTime, duration)) {
+            return "A sala de exame " + room.getName() + " está indisponível nesse horário.";
         }
+        if (!patient.isAvailable(startDateTime, duration)) {
+            return "O paciente " + patient.getName() + " já tem um procedimento nesse horário.";
+        }
+
         Examination examination = new Examination(name, startDateTime, duration, patient, room);
-        try {
-            if (patient.isAvailable(startDateTime, duration))
-                room.schedule(startDateTime, duration, examination);
-        } catch (SchedulingConflict e) {
-            return "The examination room is unavailable at that time";
-        }
-        try {
-            patient.schedule(startDateTime, duration, examination);
-        } catch (SchedulingConflict e) {
-            return "You already have a procedure scheduled at that time";
-        }
+        room.schedule(startDateTime, duration, examination);
+        patient.schedule(startDateTime, duration, examination);
+        
         dataManager.add(dataManager.getProceduresFile(), examination);
         dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
         dataManager.update(dataManager.getRoomsFile(), room, r -> r.getName().equals(room.getName()));
+        
         return "Examination scheduled";
     }
 
