@@ -37,22 +37,22 @@ public class SurgeryManager {
          * Neste sistema estamos considerando a divisão apresentada no README. A ideia do hashmap de blocos de horários é poder encontrar
          * mais facilmente os blocos por especialidade para realizar agendamentos
          */
-        specialtyTimeBlocks.put(Specialty.CARDIOLOGIA, new ArrayList<>());
-        specialtyTimeBlocks.put(Specialty.NEUROLOGIA, new ArrayList<>());
-        specialtyTimeBlocks.put(Specialty.OFTALMOLOGIA, new ArrayList<>());
-        specialtyTimeBlocks.put(Specialty.ORTOPEDIA, new ArrayList<>());
+        specialtyTimeBlocks.put(Specialty.CARDIOLOGIA, new HashMap<>());
+        specialtyTimeBlocks.put(Specialty.NEUROLOGIA, new HashMap<>());
+        specialtyTimeBlocks.put(Specialty.OFTALMOLOGIA, new HashMap<>());
+        specialtyTimeBlocks.put(Specialty.ORTOPEDIA, new HashMap<>());
         // Obs: ANESTESIOLOGIA não está nessa estrutura de blocos de horários pois participa de todos!
 
-        specialtyTimeBlocks.get(Specialty.CARDIOLOGIA).add(new TimeBlock(DayOfWeek.valueOf("TUESDAY"), LocalTime.of(7, 0), LocalTime.of(12, 0)));
-        specialtyTimeBlocks.get(Specialty.CARDIOLOGIA).add(new TimeBlock(DayOfWeek.valueOf("THURSDAY"), LocalTime.of(7, 0), LocalTime.of(12, 0)));
-        specialtyTimeBlocks.get(Specialty.NEUROLOGIA).add(new TimeBlock(DayOfWeek.valueOf("MONDAY"), LocalTime.of(13, 0), LocalTime.of(18, 0)));
-        specialtyTimeBlocks.get(Specialty.NEUROLOGIA).add(new TimeBlock(DayOfWeek.valueOf("WEDNESDAY"), LocalTime.of(13, 0), LocalTime.of(18, 0)));
-        specialtyTimeBlocks.get(Specialty.NEUROLOGIA).add(new TimeBlock(DayOfWeek.valueOf("FRIDAY"), LocalTime.of(7, 0), LocalTime.of(12, 0)));
-        specialtyTimeBlocks.get(Specialty.OFTALMOLOGIA).add(new TimeBlock(DayOfWeek.valueOf("TUESDAY"), LocalTime.of(13, 0), LocalTime.of(18, 0)));
-        specialtyTimeBlocks.get(Specialty.OFTALMOLOGIA).add(new TimeBlock(DayOfWeek.valueOf("THURSDAY"), LocalTime.of(13, 0), LocalTime.of(18, 0)));
-        specialtyTimeBlocks.get(Specialty.ORTOPEDIA).add(new TimeBlock(DayOfWeek.valueOf("MONDAY"), LocalTime.of(7, 0), LocalTime.of(12, 0)));
-        specialtyTimeBlocks.get(Specialty.ORTOPEDIA).add(new TimeBlock(DayOfWeek.valueOf("WEDNESDAY"), LocalTime.of(7, 0), LocalTime.of(12, 0)));
-        specialtyTimeBlocks.get(Specialty.ORTOPEDIA).add(new TimeBlock(DayOfWeek.valueOf("FRIDAY"), LocalTime.of(13, 0), LocalTime.of(18, 0)));
+        specialtyTimeBlocks.get(Specialty.CARDIOLOGIA).put(DayOfWeek.valueOf("TUESDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(7, 0), LocalTime.of(12, 0))));
+        specialtyTimeBlocks.get(Specialty.CARDIOLOGIA).put(DayOfWeek.valueOf("THURSDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(7, 0), LocalTime.of(12, 0))));
+        specialtyTimeBlocks.get(Specialty.NEUROLOGIA).put(DayOfWeek.valueOf("MONDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(13, 0), LocalTime.of(18, 0))));
+        specialtyTimeBlocks.get(Specialty.NEUROLOGIA).put(DayOfWeek.valueOf("WEDNESDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(13, 0), LocalTime.of(18, 0))));
+        specialtyTimeBlocks.get(Specialty.NEUROLOGIA).put(DayOfWeek.valueOf("FRIDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(7, 0), LocalTime.of(12, 0))));
+        specialtyTimeBlocks.get(Specialty.OFTALMOLOGIA).put(DayOfWeek.valueOf("TUESDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(13, 0), LocalTime.of(18, 0))));
+        specialtyTimeBlocks.get(Specialty.OFTALMOLOGIA).put(DayOfWeek.valueOf("THURSDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(13, 0), LocalTime.of(18, 0))));
+        specialtyTimeBlocks.get(Specialty.ORTOPEDIA).put(DayOfWeek.valueOf("MONDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(7, 0), LocalTime.of(12, 0))));
+        specialtyTimeBlocks.get(Specialty.ORTOPEDIA).put(DayOfWeek.valueOf("WEDNESDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(7, 0), LocalTime.of(12, 0))));
+        specialtyTimeBlocks.get(Specialty.ORTOPEDIA).put(DayOfWeek.valueOf("FRIDAY"), new ArrayList<>(Arrays.asList(LocalTime.of(13, 0), LocalTime.of(18, 0))));
 
         this.surgeryRooms = new ArrayList<SurgeryRoom>();
         for (int i = 0; i < nSurgeryRooms; i++) {
@@ -102,84 +102,136 @@ public class SurgeryManager {
                 Surgery surgery = surgeries.get(j); // Cirurgia da fila para agendar
 
                 /* #2 Analisa de acordo com a prioridade */
+
+                /* EMERGÊNCIA */
                 if (surgery.isEmergency()) {
                     startDateTime = LocalDateTime.now(); // Emergências devem ser agendadas no dia atual!
+                    LocalDateTime maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), LocalTime.of(18, 0)); // Horário de fechamento da clínica no dia
+                    LocalDateTime maxStartDateTime = maxDateTime.minus(surgery.getDuration()); // Horário máximo que a cirurgia pode ser agendada
 
-                    /* #3 - Seleciona o anestesista */
-                    List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
-                    for (int a = 0; a < anestesists.size(); a++) {
-                        if (anestesists.get(a).isAvailable(startDateTime, surgery.getDuration())) {
-                            /* #4 - Seleciona o cirurgião */
-                            List<Doctor> surgeons = doctorManager.getSurgeonsOf(currentSpecialty);
-                            for (int b = 0; b < surgeons.size(); b++) {
-                                if (surgeons.get(b).isAvailable(startDateTime, surgery.getDuration())) {
-                                    /* #5 - Seleciona a sala */
-                                    for (int c = 0; c < surgeryRooms.size(); c++) {
-                                        if (surgeryRooms.get(c).isAvailable(startDateTime, surgery.getDuration())) {
-                                            /* #6 - Seleciona um leito na RPA, caso necessário */
-                                            if (surgery.needsICU()) {
-                                                if (icuRoom.hasBedsAvailable(startDateTime, surgery.getDuration())) {
-                                                    icuRoom.bedSchedule(startDateTime, surgery.getDuration(), surgery);
-                                                    anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                    surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                    surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                } else {
-                                                    // Mudar data (para o caso da RPA indisponível)
-                                                }
-                                            } else {
-                                                anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
-                                            }
-                                        }
-                                    }
-                                }
+                    while (!couldSchedule(surgery, startDateTime, 0)) {
+                        try {
+                            if (startDateTime.plusHours(1).isAfter(maxStartDateTime)) {
+                                throw new ImpossibleSurgery("Impossible to schedule " + surgery.getName + " for patient " + surgery.getPatient().getName() + "!\n"); 
+                            } else {
+                                startDateTime = startDateTime.plusHours(1);
                             }
+                        } catch (ImpossibleSurgery e) {
+                            return e.getMessage();
                         }
                     }
 
+                /* URGÊNCIA */
                 } else if (surgery.isUrgency()) {
-                    // FAZER
-                } else {
-                    boolean scheduled = false;
-                    Map<DayOfWeek, List<LocalTime>> timeBlocks = specialtyTimeBlocks.get(currentSpecialty);
-                    startDateTime = LocalDateTime.now().plusDays(1);
-                    DayOfWeek d = startDateTieme.getDayOfWeek();
+                    Map<DayOfWeek, List<LocalTime>> timeBlocks = specialtyTimeBlocks.get(currentSpecialty); // Blocos de horário possíveis para a especialidade
+                    LocalDate startDate = LocalDate.now().plusDays(1);
+                    DayOfWeek d = startDate.getDayOfWeek();
 
-                    while (!timeBlocks.containsKey(d)) {
-                        startDateTime = startDateTime.plusDays(1);
-                        DayOfWeek d = startDateTieme.getDayOfWeek();
+                    while (!timeBlocks.containsKey(d)) { // Garante um dia da semana válido para a especialidade
+                        startDate = startDate.plusDays(1);
+                        d = startDate.getDayOfWeek();
                     }
 
-                    while (!scheduled) {
-                        List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
-                        for (int a = 0; a < anestesists.size(); a++) {
-                            if (anestesists.get(a).isAvailable(startDateTime, surgery.getDuration())) {
-                                /* #4 - Seleciona o cirurgião */
-                                List<Doctor> surgeons = doctorManager.getSurgeonsOf(currentSpecialty);
-                                for (int b = 0; b < surgeons.size(); b++) {
-                                    if (surgeons.get(b).isAvailable(startDateTime, surgery.getDuration())) {
-                                        /* #5 - Seleciona a sala */
-                                        for (int c = 0; c < surgeryRooms.size(); c++) {
-                                            if (surgeryRooms.get(c).isAvailable(startDateTime, surgery.getDuration())) {
-                                                /* #6 - Seleciona um leito na RPA, caso necessário */
-                                                if (surgery.needsICU()) {
-                                                    if (icuRoom.hasBedsAvailable(startDateTime, surgery.getDuration())) {
-                                                        icuRoom.bedSchedule(startDateTime, surgery.getDuration(), surgery);
-                                                        anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                        surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                        surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                    } else {
-                                                        // Mudar data (para o caso da RPA indisponível)
-                                                    }
-                                                } else {
-                                                    anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                    surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                    surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
-                                                }
-                                            }
-                                        }
+                    startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0)); // O horário de início é o do início do bloco
+                    LocalDateTime maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1)); // Horário de fechamento da clínica no dia do bloco
+                    LocalDateTime maxStartDateTime = maxDateTime.minus(surgery.getDuration()); // Horário máximo que a cirurgia pode ser agendada no dia do bloco
+
+                    // Obs: cirurgias urgentes só serão impossíveis de agendar caso a próxima data possível seja depois do prazo limite da cirurgia
+                    while (!couldSchedule(surgery, startDateTime, 0)) { 
+                        try {
+                            if (startDateTime.plusHours(1).isAfter(maxStartDateTime)) {
+                                startDate = startDate.PlusDays(1);
+                                while (!timeBlocks.containsKey(d)) { // Garante um dia da semana válido para a especialidade
+                                    startDate = startDate.plusDays(1);
+                                    maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1));
+                                    maxStartDateTime = maxDateTime.minus(surgery.getDuration());
+                                }
+                                if (startDate.isAfter(surgery.getLimitDate())) {
+                                    throw new ImpossibleSurgery("Impossible to schedule " + surgery.getName + " for patient " + surgery.getPatient().getName() + "!\n"); 
+                                }
+                                d = startDate.getDayOfWeek();
+                                startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0));
+                            } else {
+                                startDateTime = startDateTime.plusHours(1);
+                            }
+                        } catch (ImpossibleSurgery e) {
+                            return e.getMessage();
+                        }
+                    }
+
+                /* ELETIVA */
+                } else {
+                    Map<DayOfWeek, List<LocalTime>> timeBlocks = specialtyTimeBlocks.get(currentSpecialty); // Blocos de horário possíveis para a especialidade
+                    LocalDate startDate = LocalDate.now().plusDays(1);
+                    DayOfWeek d = startDate.getDayOfWeek();
+
+                    while (!timeBlocks.containsKey(d)) { // Garante um dia da semana válido para a especialidade
+                        startDate = startDate.plusDays(1);
+                        d = startDate.getDayOfWeek();
+                    }
+
+                    startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0)); // O horário de início é o do início do bloco
+                    LocalDateTime maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1)); // Horário de fechamento da clínica no dia do bloco
+                    LocalDateTime maxStartDateTime = maxDateTime.minus(surgery.getDuration()); // Horário máximo que a cirurgia pode ser agendada no dia do bloco
+
+                    // Obs: cirurgias eletivas nunca serão impossíveis de agendar
+                    while (!couldSchedule(surgery, startDateTime, 1)) {
+                        if (startDateTime.plusHours(1).isAfter(maxStartDateTime)) {
+                            startDate = startDate.PlusDays(1);
+                            while (!timeBlocks.containsKey(d)) { // Garante um dia da semana válido para a especialidade
+                                startDate = startDate.plusDays(1);
+                                maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1));
+                                maxStartDateTime = maxDateTime.minus(surgery.getDuration());
+                            }
+                            d = startDate.getDayOfWeek();
+                            startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0));
+                        } else {
+                            startDateTime = startDateTime.plusHours(1);
+                        }
+                }
+            }
+        }
+    }
+
+    /***
+     * Método que agenda uma cirurgia quando possível e retorna se foi possível ou não
+     */
+    private boolean couldSchedule(Surgery surgery, LocalDateTime startDateTime, int startRoom) {
+        /* #3 - Seleciona o anestesista */
+        currentSpecialty = surgery.getSpecialty();
+        List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
+
+        for (int a = 0; a < anestesists.size() && !scheduled; a++) {
+            if (anestesists.get(a).isAvailable(startDateTime, surgery.getDuration())) {
+
+                /* #4 - Seleciona o cirurgião */
+                List<Doctor> surgeons = doctorManager.getSurgeonsOf(currentSpecialty);
+                for (int b = 0; b < surgeons.size() && !scheduled; b++) {
+                    if (surgeons.get(b).isAvailable(startDateTime, surgery.getDuration())) {
+
+                        /* #5 - Seleciona a sala */
+                        for (int c = startRoom; c < surgeryRooms.size() && !scheduled; c++) { // Obs: cirurgias eletivas nunca são agendadas na SC00
+                            if (surgeryRooms.get(c).isAvailable(startDateTime, surgery.getDuration())) {
+
+                                /* #6 - Seleciona um leito na RPA, caso necessário */
+                                if (surgery.needsICU()) {
+                                    if (icuRoom.hasBedsAvailable(startDateTime, surgery.getDuration())) {
+                                        icuRoom.bedSchedule(startDateTime, surgery.getDuration(), surgery);
+                                        anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
+                                        surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
+                                        surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
+                                        return true;
+                                    } else {
+                                        return false;
                                     }
+                                } else {
+                                    anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
+                                    surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
+                                    surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
+                                    return true;
+                                }
+                            }
+                        }
                     }
                 }
             }
