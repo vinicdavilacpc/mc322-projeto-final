@@ -13,6 +13,7 @@ import com.agendajava.backend.model.Manager.Specialty;
 import com.agendajava.backend.model.procedures.Surgery;
 import com.agendajava.backend.model.rooms.ICURoom;
 import com.agendajava.backend.model.rooms.SurgeryRoom;
+import com.agendajava.backend.model.users.Doctor;
 
 /***
  * Classe que contém as filas de prioridade de cirurgia para cada especialidade
@@ -20,7 +21,7 @@ import com.agendajava.backend.model.rooms.SurgeryRoom;
  */
 public class SurgeryManager {
     private Map<Specialty, List<Surgery>> priorityLine = new HashMap<>();          // Filas de prioridade das cirurgias por especialidade
-    private Map<Specialty, List<TimeBlock>> specialtyTimeBlocks = new HashMap<>(); // Blocos de horários de cada especialidade
+    private Map<Specialty, Map<DayOfWeek, List<LocalTime>>> specialtyTimeBlocks = new HashMap<>(); // Blocos de horários de cada especialidade
     private List<SurgeryRoom> surgeryRooms;
     private ICURoom icuRoom;
     private DoctorManager doctorManager;
@@ -94,10 +95,9 @@ public class SurgeryManager {
         LocalTime time; // Horário para marcar a cirurgia
 
         /* #1 - Percorre a fila de prioridade de cada especialidade */
-        for (int i = 0; i < Specialty.values().length; i++) {     
-            Specialty currentSpecialty = Specialty.values()[i];                  
-            List<Surgery> surgeries = this.priorityLine.get(currentSpecialty); 
-
+        for (Specialty currentSpecialty : Specialty.values()) {
+            List<Surgery> surgeries = this.priorityLine.get(currentSpecialty);
+            
             for (int j = 0; j < surgeries.size(); j++) {
                 Surgery surgery = surgeries.get(j); // Cirurgia da fila para agendar
 
@@ -108,28 +108,28 @@ public class SurgeryManager {
                     /* #3 - Seleciona o anestesista */
                     List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
                     for (int a = 0; a < anestesists.size(); a++) {
-                        if (anestesists[a].isAvailable(startDateTime, surgery.getDuration())) {
+                        if (anestesists.get(a).isAvailable(startDateTime, surgery.getDuration())) {
                             /* #4 - Seleciona o cirurgião */
                             List<Doctor> surgeons = doctorManager.getSurgeonsOf(currentSpecialty);
-                            for (int b; b < surgeons.size(); b++) {
-                                if (surgeons[b].isAvailable(startDateTime, surgery.getDuration())) {
+                            for (int b = 0; b < surgeons.size(); b++) {
+                                if (surgeons.get(b).isAvailable(startDateTime, surgery.getDuration())) {
                                     /* #5 - Seleciona a sala */
                                     for (int c = 0; c < surgeryRooms.size(); c++) {
-                                        if (surgeryRooms[c].isAvailable(startDateTime, surgery.getDuration())) {
+                                        if (surgeryRooms.get(c).isAvailable(startDateTime, surgery.getDuration())) {
                                             /* #6 - Seleciona um leito na RPA, caso necessário */
                                             if (surgery.needsICU()) {
-                                                if (icuRoom.hasBedsAvailable()) {
+                                                if (icuRoom.hasBedsAvailable(startDateTime, surgery.getDuration())) {
                                                     icuRoom.bedSchedule(startDateTime, surgery.getDuration(), surgery);
-                                                    anestesist[a].schedule(startDateTime, surgery.getDuration(), surgery);
-                                                    surgeon[b].schedule(startDateTime, surgery.getDuration(), surgery);
-                                                    surgeryRooms[c].schedule(startDateTime, surgery.getDuration(), surgery);
+                                                    anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                    surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                    surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
                                                 } else {
-                                                    // Mudar data
+                                                    // Mudar data (para o caso da RPA indisponível)
                                                 }
                                             } else {
-                                                anestesist[a].schedule(startDateTime, surgery.getDuration(), surgery);
-                                                surgeon[b].schedule(startDateTime, surgery.getDuration(), surgery);
-                                                surgeryRooms[c].schedule(startDateTime, surgery.getDuration(), surgery);
+                                                anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
                                             }
                                         }
                                     }
@@ -141,7 +141,46 @@ public class SurgeryManager {
                 } else if (surgery.isUrgency()) {
                     // FAZER
                 } else {
-                    // FAZER
+                    boolean scheduled = false;
+                    Map<DayOfWeek, List<LocalTime>> timeBlocks = specialtyTimeBlocks.get(currentSpecialty);
+                    startDateTime = LocalDateTime.now().plusDays(1);
+                    DayOfWeek d = startDateTieme.getDayOfWeek();
+
+                    while (!timeBlocks.containsKey(d)) {
+                        startDateTime = startDateTime.plusDays(1);
+                        DayOfWeek d = startDateTieme.getDayOfWeek();
+                    }
+
+                    while (!scheduled) {
+                        List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
+                        for (int a = 0; a < anestesists.size(); a++) {
+                            if (anestesists.get(a).isAvailable(startDateTime, surgery.getDuration())) {
+                                /* #4 - Seleciona o cirurgião */
+                                List<Doctor> surgeons = doctorManager.getSurgeonsOf(currentSpecialty);
+                                for (int b = 0; b < surgeons.size(); b++) {
+                                    if (surgeons.get(b).isAvailable(startDateTime, surgery.getDuration())) {
+                                        /* #5 - Seleciona a sala */
+                                        for (int c = 0; c < surgeryRooms.size(); c++) {
+                                            if (surgeryRooms.get(c).isAvailable(startDateTime, surgery.getDuration())) {
+                                                /* #6 - Seleciona um leito na RPA, caso necessário */
+                                                if (surgery.needsICU()) {
+                                                    if (icuRoom.hasBedsAvailable(startDateTime, surgery.getDuration())) {
+                                                        icuRoom.bedSchedule(startDateTime, surgery.getDuration(), surgery);
+                                                        anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                        surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                        surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                    } else {
+                                                        // Mudar data (para o caso da RPA indisponível)
+                                                    }
+                                                } else {
+                                                    anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                    surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                    surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
+                                                }
+                                            }
+                                        }
+                                    }
+                    }
                 }
             }
         }

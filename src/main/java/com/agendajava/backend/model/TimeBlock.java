@@ -1,4 +1,4 @@
-package main.java.com.agendajava.backend.model;
+package com.agendajava.backend.model;
 
 import java.time.LocalTime;
 import java.time.DayOfWeek;
@@ -9,9 +9,7 @@ import java.time.DayOfWeek;
  * TimeBlock
  */
 public class TimeBlock {
-    private DayOfWeek dayOfWeek;
-    private LocalTime start;
-    private LocalTime end;
+    private Map<DayOfWeek, List<LocalTime>> timeByDay;
 
     public TimeBlock (DayOfWeek dayOfWeek, LocalTime start, LocalTime end) {
         this.dayOfWeek = dayOfWeek;
