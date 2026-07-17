@@ -9,7 +9,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Examination extends Procedure {
-    private ExaminationRoom room;
+    private final ExaminationRoom room;
+
+    public ExaminationRoom getRoom() {
+        return this.room;
+    }
 
     @JsonCreator
     public Examination(

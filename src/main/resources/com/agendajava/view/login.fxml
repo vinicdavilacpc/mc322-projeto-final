@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="400.0" style="-fx-background-color: #ecf0f1;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agendajava.controller.LoginController">
+   <children>
+      <VBox alignment="CENTER" spacing="15.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="60.0" AnchorPane.bottomAnchor="60.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 30;">
+         <children>
+            <Label text="Agenda J (Va)" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+            <VBox spacing="5.0" prefWidth="250.0">
+               <Label text="E-mail" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+               <TextField fx:id="emailInput" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
+            </VBox>
+            <VBox spacing="5.0" prefWidth="250.0">
+               <Label text="Senha" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+               <PasswordField fx:id="senhaInput" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
+            </VBox>
+            <Button onAction="#fazerLogin" prefWidth="250.0" text="Entrar no Sistema" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10; -fx-cursor: hand;"/>
+            <Label fx:id="mensagemErro" textFill="#e74c3c" wrapText="true" textAlignment="CENTER" style="-fx-font-weight: bold;"/>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

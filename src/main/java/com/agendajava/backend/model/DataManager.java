@@ -1,14 +1,16 @@
 package com.agendajava.backend.model;
 
-import com.agendajava.backend.interfaces.Persistable;
-
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.type.CollectionType;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+
+import com.agendajava.backend.interfaces.Persistable;
+import com.agendajava.backend.model.procedures.Procedure;
+import com.agendajava.backend.model.rooms.Room;
+import com.agendajava.backend.model.users.User;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 public class DataManager implements Persistable {
     private final String USERS_FILE = "users.json";
@@ -21,79 +23,121 @@ public class DataManager implements Persistable {
         this.objectMapper.findAndRegisterModules();
     }
 
-    public String getUsersFile() {
-        return this.USERS_FILE;
-    }
+    public String getUsersFile() { return this.USERS_FILE; }
+    public String getProceduresFile() { return this.PROCEDURES_FILE; }
+    public String getRoomsFile() { return this.ROOMS_FILE; }
 
-    public String getProceduresFile() {
-        return this.PROCEDURES_FILE;
-    }
-
-    public String getRoomsFile() {
-        return this.ROOMS_FILE;
+    private Class<?> getBaseClassForFile(String fileName) {
+        if (fileName.equals(USERS_FILE)) return User.class;
+        if (fileName.equals(PROCEDURES_FILE)) return Procedure.class;
+        if (fileName.equals(ROOMS_FILE)) return Room.class;
+        return Object.class;
     }
 
     private <T> List<T> jsonToList(String fileName, Class<T> type) {
         File file = new File(fileName);
-
-        // se o json estiver vazio, retornamos uma lista vazia
         if (!file.exists() || file.length() == 0) {
             return new ArrayList<>();
         }
-
-        // se o json tiver informações, transformamos ele em uma lista para auxiliar nas operações
         CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, type);
-        return objectMapper.readValue(file, listType);
+        try {
+            return objectMapper.readValue(file, listType);
+        } catch (Exception e) {
+            System.err.println("======== ERRO CRÍTICO ========");
+            System.err.println("Falha ao ler o arquivo: " + fileName);
+            e.printStackTrace();
+            System.err.println("==============================");
+            throw new RuntimeException("Falha na leitura do JSON para evitar perda de dados.", e);
+        }
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public <T> void save(String fileName, List<T> data) {
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), data);
+        Class<?> baseClass = getBaseClassForFile(fileName);
+        save(fileName, data, (Class<T>) baseClass);
     }
 
+    public <T> void save(String fileName, List<T> data, Class<T> baseClass) {
+        try {
+            CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, baseClass);
+            objectMapper.writerFor(listType).withDefaultPrettyPrinter().writeValue(new File(fileName), data);
+        } catch (Exception e) {
+            System.out.println("Erro ao salvar o arquivo: " + fileName);
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public <T> void add(String fileName, T object) {
-        List<T> list = jsonToList(fileName, (Class<T>) object.getClass());
-        list.add(object);
-        save(fileName, list);
+        Class<?> baseClass = getBaseClassForFile(fileName);
+        addInternal(fileName, object, baseClass);
     }
 
-    public <T> void delete(String fileName, T object) {
-        List<T> list = jsonToList(fileName, (Class<T>) object.getClass());
+    @SuppressWarnings("unchecked")
+    private <T, B> void addInternal(String fileName, T object, Class<B> baseClass) {
+        List<B> list = jsonToList(fileName, baseClass);
+        list.add((B) object);
+        save(fileName, list, baseClass);
+    }
 
-        // itera sobre a lista e compara todos os objetos ao object, quando retornar true, remove ele da lista
+    @Override
+    public <T> void delete(String fileName, T object) {
+        Class<?> baseClass = getBaseClassForFile(fileName);
+        deleteInternal(fileName, object, baseClass);
+    }
+
+    private <T, B> void deleteInternal(String fileName, T object, Class<B> baseClass) {
+        List<B> list = jsonToList(fileName, baseClass);
         list.removeIf(listItem -> {
             try {
                 String itemJson = objectMapper.writeValueAsString(listItem);
                 String objectJson = objectMapper.writeValueAsString(object);
-
                 return itemJson.equals(objectJson);
             } catch (Exception e) {
                 return false;
             }
         });
-        save(fileName, list);
+        save(fileName, list, baseClass);
     }
 
-    // método de update! 
+    @Override
     public <T> void update(String fileName, T updatedObject, Predicate<T> filter) {
-        List<T> list = jsonToList(fileName, (Class<T>) updatedObject.getClass());
+        Class<?> baseClass = getBaseClassForFile(fileName);
+        updateInternal(fileName, updatedObject, filter, baseClass);
+    }
 
+    @SuppressWarnings("unchecked")
+    private <T, B> void updateInternal(String fileName, T updatedObject, Predicate<T> filter, Class<B> baseClass) {
+        List<B> list = jsonToList(fileName, baseClass);
+        
+        boolean found = false;
         for (int i = 0; i < list.size(); i++) {
-            if (filter.test(list.get(i))) {
-                // 3. Achou! Substitui o objeto antigo pelo atualizado
-                list.set(i, updatedObject);
-                break; // Para o loop
+            B item = list.get(i);
+            
+            if (updatedObject.getClass().isInstance(item)) {
+                T castedItem = (T) item;
+                if (filter.test(castedItem)) {
+                    list.set(i, (B) updatedObject);
+                    found = true;
+                    break; 
+                }
             }
         }
         
-        save(fileName, list);
+        if (found) {
+            save(fileName, list, baseClass);
+        }
     }
 
+    @Override
     public <T> T findOne(String fileName, Class<T> type, Predicate<T> filter) {
         List<T> list = jsonToList(fileName, type);
-
         return list.stream().filter(filter).findFirst().orElse(null);
-
-        // exemplo do predicate: user -> user.getEmail().equals(emailDigitado)
     }
 
+    @Override
+    public <T> List<T> findAll(String fileName, Class<T> type) {
+        return jsonToList(fileName, type);
+    }
 }

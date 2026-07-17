@@ -2,7 +2,6 @@ package com.agendajava.backend.model.procedures;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.agendajava.backend.model.Manager.Priority;
@@ -10,6 +9,8 @@ import com.agendajava.backend.model.Manager.Specialty;
 import com.agendajava.backend.model.rooms.SurgeryRoom;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Surgery extends Procedure {
     // Atributos agendados

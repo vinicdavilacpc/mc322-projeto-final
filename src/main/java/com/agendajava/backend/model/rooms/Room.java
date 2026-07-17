@@ -10,16 +10,48 @@ import java.util.TreeMap;
 import com.agendajava.backend.model.Calendar;
 import com.agendajava.backend.model.Equipment;
 import com.agendajava.backend.model.procedures.Procedure;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME, 
+    include = JsonTypeInfo.As.PROPERTY, 
+    property = "type"
+)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = ExaminationRoom.class, name = "examinationRoom"),
+    @JsonSubTypes.Type(value = SurgeryRoom.class, name = "surgeryRoom")
+})
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Room {
     private String name;
+    
+    @JsonIgnore
+    private int ID;
+    
+    @JsonIgnore
     private Calendar calendar;
 
     public Room(String name) {
         this.name = name;
     }
 
-    /* Já retorna o calendário em um formato acessável! */
+    public String getName() {
+        return this.name;
+    }
+
+    @JsonIgnore
+    public int getID() {
+        return this.ID;
+    }
+
+    public List<Equipment> getEquipments() {
+        return this.equipments;
+    }
+
+    @JsonIgnore
     public Map<LocalDate, TreeMap<LocalTime, Procedure>> getCalendar() {
         return this.calendar.get();
     }

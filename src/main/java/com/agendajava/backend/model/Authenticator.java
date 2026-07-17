@@ -30,7 +30,7 @@ public class Authenticator implements Authenticable {
         User user = null;
 
         if (role.equalsIgnoreCase("doctor")) {
-            user = new Doctor(name, email, password, specialty);
+            user = new Doctor(name, email, password, specialty, false);
         } 
         if (role.equalsIgnoreCase("patient")) {
             user = new Patient(name, email, password);
