@@ -11,8 +11,9 @@ import com.agendajava.backend.exceptions.SchedulingConflict;
 import com.agendajava.backend.interfaces.Schedulable;
 import com.agendajava.backend.model.Calendar;
 import com.agendajava.backend.model.procedures.Procedure;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME, 
@@ -28,6 +29,8 @@ public abstract class User implements Schedulable {
     private String name;
     private String email;
     private String password;
+
+    @JsonIgnore
     private Calendar calendar;
 
     public User(String name, String email, String password) {
@@ -50,6 +53,7 @@ public abstract class User implements Schedulable {
     }
 
     /* Já retorna o calendário em um formato acessável! */
+    @JsonIgnore
     public Map<LocalDate, TreeMap<LocalTime, Procedure>> getCalendar() {
         return this.calendar.get();
     }

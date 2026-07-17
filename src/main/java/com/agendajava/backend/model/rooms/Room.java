@@ -10,10 +10,12 @@ import java.util.TreeMap;
 import com.agendajava.backend.model.Calendar;
 import com.agendajava.backend.model.Equipment;
 import com.agendajava.backend.model.procedures.Procedure;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Room {
     private final String name;
     private int ID;
+    @JsonIgnore
     private Calendar calendar;
     private List<Equipment> equipments = new ArrayList<>();
 
@@ -31,6 +33,7 @@ public class Room {
     }
 
     /* Já retorna o calendário em um formato acessável! */
+    @JsonIgnore
     public Map<LocalDate, TreeMap<LocalTime, Procedure>> getCalendar() {
         return this.calendar.get();
     }
