@@ -15,4 +15,6 @@ public interface Schedulable {
     public void schedule(LocalDateTime startDateTime, Duration duration, Procedure procedure);
 
     public void cancel(Procedure procedure);
+
+    public LocalTime nextTimeAvailable(LocalDateTime startDateTime, Duration duration);
 }

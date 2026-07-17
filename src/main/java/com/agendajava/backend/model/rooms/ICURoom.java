@@ -75,4 +75,8 @@ public class ICURoom extends Room {
 
         return true;
     }
+
+    public int getBedNumber() {
+        return bedNumber;
+    }
 }

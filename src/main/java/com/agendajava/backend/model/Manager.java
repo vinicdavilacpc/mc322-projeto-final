@@ -38,8 +38,8 @@ public class Manager {
     public Manager() {
         this.dataManager = new DataManager();
         this.authenticator = new Authenticator();
-        this.surgeryManager = new SurgeryManager(5, 8);
         this.doctorManager = new DoctorManager(dataManager);
+        this.surgeryManager = new SurgeryManager(5, 8, doctorManager);
         this.user = null;
     }
 
@@ -148,7 +148,7 @@ public class Manager {
     }
 
     public String surgeryCreated(String name, Patient patient, Specialty specialty, Priority priority, boolean icuNecessity, 
-                                Duration estimatedDuration, int clinicalPriority, Duration estimatedRecoverDuration, LocalDate limitDate) {
+                                Duration duration, int clinicalPriority, Duration estimatedRecoverDuration, LocalDate limitDate) {
         try {
             if (user == null) {
                 throw new UserNotLoggedIn("Log in to create a surgery"); 
@@ -166,7 +166,7 @@ public class Manager {
             return "Patients cannot create surgeries";
         }
 
-        Surgery surgery = new Surgery(name, patient, specialty, priority, icuNecessity, estimatedDuration, clinicalPriority, estimatedRecoverDuration, limitDate);
+        Surgery surgery = new Surgery(name, patient, specialty, priority, icuNecessity, duration, clinicalPriority, estimatedRecoverDuration, limitDate);
         surgeryScheduler.addToPriorityLine(surgery);
         
         return "Surgery created";

@@ -2,6 +2,7 @@ package com.agendajava.backend.model;
 
 import java.util.List;
 import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Map;
 
 import com.agendajava.backend.model.Manager.Specialty;
 import com.agendajava.backend.model.procedures.Surgery;
+import com.agendajava.backend.model.rooms.ICURoom;
 import com.agendajava.backend.model.rooms.SurgeryRoom;
 
 /***
@@ -21,9 +23,12 @@ public class SurgeryManager {
     private Map<Specialty, List<TimeBlock>> specialtyTimeBlocks = new HashMap<>(); // Blocos de horários de cada especialidade
     private List<SurgeryRoom> surgeryRooms;
     private ICURoom icuRoom;
+    private DoctorManager doctorManager;
 
 
-    public SurgeryManager(int nSurgeryRooms, int nBedsICU) {
+    public SurgeryManager(int nSurgeryRooms, int nBedsICU, DoctorManager doctorManager) {
+        this.doctorManager = doctorManager;
+
         for (int i = 0; i < Specialty.values().length; i++) 
             priorityLine.put(Specialty.values()[i], new ArrayList<>());
 
@@ -54,9 +59,6 @@ public class SurgeryManager {
         }
 
         this.icuRoom = new ICURoom("SALA RPA", nBedsICU); 
-
-
-        
     }
 
     public List<Surgery> getPLineOf(Specialty specialty) {
@@ -64,10 +66,10 @@ public class SurgeryManager {
     }
 
     public void addToPriorityLine(Surgery surgery) {
-        pLine = priorityLine.get(surgery.getSpecialty()); // Fila de prioridade da especialidade
+        List<Surgery> pLine = priorityLine.get(surgery.getSpecialty()); // Fila de prioridade da especialidade
         // Prioridade: Emergência > Urgência > Eletiva
 
-        if (pLine.size() == 0) { // Fila vazia
+        if (pLine.isEmpty()) { // Fila vazia
             pLine.add(surgery);
         } else {
             int i;
@@ -86,13 +88,61 @@ public class SurgeryManager {
      * @return
      */
     public void surgeryScheduler(ArrayList<Surgery> priorityLine, ArrayList<SurgeryRoom> rooms) {
-        LocalDate dateNow = LocalDate.now();
-        LocalDate startSchedule = dateNow.plusDays(1); // O scheduler inicia a agenda de agendamento sempre no dia seguinte ao atual
+        List<Surgery> reschedule = new ArrayList<Surgery>(); // Cirurgias que precisarão ser realocadas
+        LocalDateTime startDateTime;
+        LocalDate date; // Data para marcar a cirurgia
+        LocalTime time; // Horário para marcar a cirurgia
 
-        for (int i = 0; i < Specialty.values().length; i++) {
-            List<Surgery> surgeries = this.priorityLine.get(Specialty.values()[i]);
+        /* #1 - Percorre a fila de prioridade de cada especialidade */
+        for (int i = 0; i < Specialty.values().length; i++) {     
+            Specialty currentSpecialty = Specialty.values()[i];                  
+            List<Surgery> surgeries = this.priorityLine.get(currentSpecialty); 
+
             for (int j = 0; j < surgeries.size(); j++) {
-                Surgery surgery = surgeries.get(j); 
+                Surgery surgery = surgeries.get(j); // Cirurgia da fila para agendar
+
+                /* #2 Analisa de acordo com a prioridade */
+                if (surgery.isEmergency()) {
+                    startDateTime = LocalDateTime.now(); // Emergências devem ser agendadas no dia atual!
+
+                    /* #3 - Seleciona o anestesista */
+                    List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
+                    for (int a = 0; a < anestesists.size(); a++) {
+                        if (anestesists[a].isAvailable(startDateTime, surgery.getDuration())) {
+                            /* #4 - Seleciona o cirurgião */
+                            List<Doctor> surgeons = doctorManager.getSurgeonsOf(currentSpecialty);
+                            for (int b; b < surgeons.size(); b++) {
+                                if (surgeons[b].isAvailable(startDateTime, surgery.getDuration())) {
+                                    /* #5 - Seleciona a sala */
+                                    for (int c = 0; c < surgeryRooms.size(); c++) {
+                                        if (surgeryRooms[c].isAvailable(startDateTime, surgery.getDuration())) {
+                                            /* #6 - Seleciona um leito na RPA, caso necessário */
+                                            if (surgery.needsICU()) {
+                                                if (icuRoom.hasBedsAvailable()) {
+                                                    icuRoom.bedSchedule(startDateTime, surgery.getDuration(), surgery);
+                                                    anestesist[a].schedule(startDateTime, surgery.getDuration(), surgery);
+                                                    surgeon[b].schedule(startDateTime, surgery.getDuration(), surgery);
+                                                    surgeryRooms[c].schedule(startDateTime, surgery.getDuration(), surgery);
+                                                } else {
+                                                    // Mudar data
+                                                }
+                                            } else {
+                                                anestesist[a].schedule(startDateTime, surgery.getDuration(), surgery);
+                                                surgeon[b].schedule(startDateTime, surgery.getDuration(), surgery);
+                                                surgeryRooms[c].schedule(startDateTime, surgery.getDuration(), surgery);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                } else if (surgery.isUrgency()) {
+                    // FAZER
+                } else {
+                    // FAZER
+                }
             }
         }
     }

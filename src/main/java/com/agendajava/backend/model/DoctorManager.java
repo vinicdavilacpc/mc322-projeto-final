@@ -11,6 +11,7 @@ import com.agendajava.backend.model.users.Doctor;
 public class DoctorManager {
     private Map<Specialty, List<Doctor>> doctors = new HashMap<>();
     private Map<Specialty, List<Doctor>> surgeonDoctors = new HashMap<>();
+    private Map<Specialty, List<Doctor>> anestesistDoctors = new HashMap<>();
 
     public DoctorManager(DataManager dataManager) {
         for (int i = 0; i < Specialty.values().length; i++) {
@@ -25,6 +26,10 @@ public class DoctorManager {
 
     public List<Doctor> getSurgeonsOf(Specialty specialty) {
         return this.surgeonDoctors.get(specialty);
+    }
+
+    public List<Doctor> getAnestesistsOf(Specialty specialty) {
+        return this.anestesistDoctors.get(specialty);
     }
 
     public void addDoctorOf(Doctor newDoctor) {
