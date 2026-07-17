@@ -27,7 +27,6 @@ public class DataManager implements Persistable {
     public String getProceduresFile() { return this.PROCEDURES_FILE; }
     public String getRoomsFile() { return this.ROOMS_FILE; }
 
-    // Descobre qual é a classe mãe correta de cada arquivo
     private Class<?> getBaseClassForFile(String fileName) {
         if (fileName.equals(USERS_FILE)) return User.class;
         if (fileName.equals(PROCEDURES_FILE)) return Procedure.class;
@@ -48,14 +47,21 @@ public class DataManager implements Persistable {
             System.err.println("Falha ao ler o arquivo: " + fileName);
             e.printStackTrace();
             System.err.println("==============================");
-            // Agora o sistema PARA em vez de retornar lista vazia e apagar os dados!
             throw new RuntimeException("Falha na leitura do JSON para evitar perda de dados.", e);
         }
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public <T> void save(String fileName, List<T> data) {
+        Class<?> baseClass = getBaseClassForFile(fileName);
+        save(fileName, data, (Class<T>) baseClass);
+    }
+
+    public <T> void save(String fileName, List<T> data, Class<T> baseClass) {
         try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), data);
+            CollectionType listType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, baseClass);
+            objectMapper.writerFor(listType).withDefaultPrettyPrinter().writeValue(new File(fileName), data);
         } catch (Exception e) {
             System.out.println("Erro ao salvar o arquivo: " + fileName);
             e.printStackTrace();
@@ -68,12 +74,11 @@ public class DataManager implements Persistable {
         addInternal(fileName, object, baseClass);
     }
 
-    // Método interno para manter a tipagem correta no Jackson
     @SuppressWarnings("unchecked")
     private <T, B> void addInternal(String fileName, T object, Class<B> baseClass) {
         List<B> list = jsonToList(fileName, baseClass);
         list.add((B) object);
-        save(fileName, list);
+        save(fileName, list, baseClass);
     }
 
     @Override
@@ -93,7 +98,7 @@ public class DataManager implements Persistable {
                 return false;
             }
         });
-        save(fileName, list);
+        save(fileName, list, baseClass);
     }
 
     @Override
@@ -113,16 +118,15 @@ public class DataManager implements Persistable {
             if (updatedObject.getClass().isInstance(item)) {
                 T castedItem = (T) item;
                 if (filter.test(castedItem)) {
-                    list.set(i, (B) updatedObject); // Agora salvamos preservando a herança
+                    list.set(i, (B) updatedObject);
                     found = true;
                     break; 
                 }
             }
         }
         
-        // Só salva se realmente encontrar algo para atualizar
         if (found) {
-            save(fileName, list);
+            save(fileName, list, baseClass);
         }
     }
 

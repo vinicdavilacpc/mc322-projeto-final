@@ -1,11 +1,16 @@
-[ {
-  "name" : "Paciente de Teste",
-  "email" : "paciente@email.com",
-  "password" : "123"
-}, {
-  "name" : "Doutor Teste",
-  "email" : "medico@email.com",
-  "password" : "123",
-  "specialty" : "CARDIOLOGIA",
-  "surgeon" : false
-} ]
+[
+  {
+    "type": "patient",
+    "name": "Paciente de Teste",
+    "email": "paciente@email.com",
+    "password": "123"
+  },
+  {
+    "type": "doctor",
+    "name": "Doutor Teste",
+    "email": "medico@email.com",
+    "password": "123",
+    "specialty": "CARDIOLOGIA",
+    "surgeon": false
+  }
+]
