@@ -6,33 +6,38 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="550.0" prefWidth="650.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agendajava.controller.ExameController">
+<AnchorPane prefHeight="600.0" prefWidth="650.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agendajava.controller.ExameController">
    <children>
-      <VBox spacing="15.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="30.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 30;">
+      <VBox spacing="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="30.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 30;">
          <children>
             <Label text="Agendar Novo Exame" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 10 0;" />
             
-            <VBox spacing="5.0">
+            <VBox spacing="3.0">
                <Label text="Nome do Exame" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
                <TextField fx:id="nomeInput" promptText="Ex: Raio-X Torax" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
             </VBox>
             
-            <VBox spacing="5.0">
+            <VBox spacing="3.0">
+               <Label text="E-mail do Paciente" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+               <TextField fx:id="pacienteEmailInput" promptText="paciente@email.com" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
+            </VBox>
+
+            <VBox spacing="3.0">
                <Label text="Data" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
                <DatePicker fx:id="dataInput" maxWidth="Infinity" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 4;"/>
             </VBox>
             
-            <VBox spacing="5.0">
+            <VBox spacing="3.0">
                <Label text="Horário (HH:mm)" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
                <TextField fx:id="horaInput" promptText="Ex: 10:00" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
             </VBox>
             
-            <VBox spacing="5.0">
+            <VBox spacing="3.0">
                <Label text="Duração Estimada (em minutos)" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
                <TextField fx:id="duracaoInput" promptText="Ex: 45" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
             </VBox>
             
-            <VBox spacing="5.0">
+            <VBox spacing="3.0">
                <Label text="Nome da Sala" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
                <TextField fx:id="salaInput" promptText="Ex: Sala 1" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
             </VBox>
