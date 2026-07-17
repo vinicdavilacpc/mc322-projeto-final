@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="painelPrincipal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agendajava.controller.DashboardController">
+<BorderPane fx:id="painelPrincipal" prefHeight="600.0" prefWidth="900.0" style="-fx-background-color: #ecf0f1;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agendajava.controller.DashboardController">
    <left>
-      <VBox prefHeight="400.0" prefWidth="199.0" BorderPane.alignment="CENTER" spacing="10" style="-fx-padding: 10;">
+      <VBox prefWidth="220.0" spacing="10.0" style="-fx-background-color: #2c3e50; -fx-padding: 20;">
          <children>
-            <Button mnemonicParsing="false" onAction="#abrirTelaAgendamentos" text="Meus agendamentos" />
-            <Button mnemonicParsing="false" onAction="#abrirTelaMarcarConsulta" text="Marcar consulta" />
-            <Button mnemonicParsing="false" onAction="#abrirTelaMarcarExame" text="Marcar exame" />
-            <Button mnemonicParsing="false" onAction="#fazerLogout" text="Sair" />
+            <Label text="MENU PRINCIPAL" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #95a5a6; -fx-padding: 0 0 15 0;" />
+            <Button onAction="#abrirTelaAgendamentos" text="Meus Agendamentos" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: BASELINE_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-border-color: transparent transparent #34495e transparent; -fx-border-width: 0 0 1 0; -fx-padding: 10 0 10 0;"/>
+            <Button onAction="#abrirTelaMarcarConsulta" text="Marcar Consulta" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: BASELINE_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-border-color: transparent transparent #34495e transparent; -fx-border-width: 0 0 1 0; -fx-padding: 10 0 10 0;"/>
+            <Button onAction="#abrirTelaMarcarExame" text="Marcar Exame" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: BASELINE_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-border-color: transparent transparent #34495e transparent; -fx-border-width: 0 0 1 0; -fx-padding: 10 0 10 0;"/>
+            <VBox VBox.vgrow="ALWAYS" />
+            <Button onAction="#fazerLogout" text="Sair do Sistema" maxWidth="Infinity" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10; -fx-cursor: hand;"/>
          </children>
       </VBox>
    </left>
-   <center></center>
+   <center>
+      <VBox alignment="CENTER">
+         <Label text="Bem-vindo ao painel do Agenda J(Va)!" style="-fx-font-size: 20px; -fx-text-fill: #7f8c8d;"/>
+         <Label text="Selecione uma opção no menu lateral." style="-fx-font-size: 14px; -fx-text-fill: #95a5a6;"/>
+      </VBox>
+   </center>
 </BorderPane>

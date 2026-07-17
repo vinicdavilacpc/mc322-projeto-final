@@ -1,42 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agendajava.controller.ConsultaController">
+<AnchorPane prefHeight="550.0" prefWidth="650.0" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.agendajava.controller.ConsultaController">
    <children>
-      <VBox alignment="CENTER_LEFT" layoutX="50.0" layoutY="30.0" spacing="15.0">
+      <VBox spacing="15.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="30.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 30;">
          <children>
-            <Label text="Agendar Nova Consulta">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
+            <Label text="Agendar Nova Consulta" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-padding: 0 0 10 0;" />
             
-            <Label text="Nome da Consulta (ex: Retorno Ortopedia):" />
-            <TextField fx:id="nomeInput" prefWidth="300.0" />
+            <VBox spacing="5.0">
+               <Label text="Nome da Consulta" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+               <TextField fx:id="nomeInput" promptText="Ex: Retorno Ortopedia" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
+            </VBox>
             
-            <Label text="Data:" />
-            <DatePicker fx:id="dataInput" prefWidth="300.0" />
+            <VBox spacing="5.0">
+               <Label text="Data" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+               <DatePicker fx:id="dataInput" maxWidth="Infinity" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 4;"/>
+            </VBox>
             
-            <Label text="Horário (HH:mm):" />
-            <TextField fx:id="horaInput" prefWidth="300.0" promptText="Ex: 14:30" />
+            <VBox spacing="5.0">
+               <Label text="Horário (HH:mm)" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+               <TextField fx:id="horaInput" promptText="Ex: 14:30" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
+            </VBox>
             
-            <Label text="Duração Estimada (em minutos):" />
-            <TextField fx:id="duracaoInput" prefWidth="300.0" promptText="Ex: 60" />
+            <VBox spacing="5.0">
+               <Label text="Duração Estimada (em minutos)" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+               <TextField fx:id="duracaoInput" promptText="Ex: 60" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
+            </VBox>
             
-            <Label text="E-mail do Médico:" />
+            <VBox spacing="5.0">
+               <Label text="E-mail do Médico" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
+               <TextField fx:id="medicoEmailInput" promptText="medico@email.com" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
+            </VBox>
             
-            <TextField fx:id="medicoEmailInput" prefWidth="300.0" promptText="medico@email.com" />
-            
-            <Button mnemonicParsing="false" onAction="#agendarConsulta" text="Confirmar Agendamento" />
-            
-            <Label fx:id="mensagemFeedback" textFill="RED" />
+            <Button onAction="#agendarConsulta" text="Confirmar Agendamento" maxWidth="Infinity" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 12; -fx-cursor: hand; -fx-margin: 10 0 0 0;"/>
+            <Label fx:id="mensagemFeedback" wrapText="true" />
          </children>
       </VBox>
    </children>
