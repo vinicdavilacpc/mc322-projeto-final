@@ -6,6 +6,6 @@ class BackendApplicationTests {
 
     @Test
     void contextLoads() {
-        // Teste vazio só pra garantir que compila
+        // Teste vazio só pra compilar
     }
 }

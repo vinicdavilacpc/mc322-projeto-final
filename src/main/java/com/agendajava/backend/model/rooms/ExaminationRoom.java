@@ -56,5 +56,15 @@ public class ExaminationRoom extends Room implements Schedulable {
 
     @Override
     public void cancel(Procedure procedure) {
+        LocalDate date = procedure.getStarDateTime().toLocalDate();
+        LocalTime startTime = procedure.getStarDateTime().toLocalTime();
+
+        if (this.getCalendar().containsKey(date)) {
+            this.getCalendar().get(date).remove(startTime);
+            
+            if (this.getCalendar().get(date).isEmpty()) {
+                this.getCalendar().remove(date);
+            }
+        }
     }
 }
