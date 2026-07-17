@@ -1,0 +1,20 @@
+[ {
+  "type" : "examination",
+  "name" : "Teste",
+  "starDateTime" : [ 2026, 7, 21, 10, 0 ],
+  "duration" : 1800.000000000,
+  "patient" : {
+    "type" : "patient",
+    "name" : "Paciente de Teste",
+    "email" : "paciente@email.com",
+    "password" : "123"
+  },
+  "room" : {
+    "type" : "examinationRoom",
+    "name" : "Sala 1",
+    "equipments" : [ {
+      "name" : "Aparelho de Raio-X"
+    } ],
+    "id" : 0
+  }
+} ]

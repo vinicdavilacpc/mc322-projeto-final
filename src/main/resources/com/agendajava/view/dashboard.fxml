@@ -11,6 +11,7 @@
          <children>
             <Button mnemonicParsing="false" onAction="#abrirTelaAgendamentos" text="Meus agendamentos" />
             <Button mnemonicParsing="false" onAction="#abrirTelaMarcarConsulta" text="Marcar consulta" />
+            <Button mnemonicParsing="false" onAction="#abrirTelaMarcarExame" text="Marcar exame" />
             <Button mnemonicParsing="false" onAction="#fazerLogout" text="Sair" />
          </children>
       </VBox>

@@ -1,0 +1,8 @@
+[ {
+  "type" : "examinationRoom",
+  "name" : "Sala 1",
+  "equipments" : [ {
+    "name" : "Aparelho de Raio-X"
+  } ],
+  "id" : 0
+} ]

@@ -48,6 +48,19 @@ public class DashboardController {
     }
 
     @FXML
+    public void abrirTelaMarcarExame() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agendajava/view/exame.fxml"));
+            Parent telaExame = loader.load();
+            ExameController controller = loader.getController();
+            controller.setManager(this.manager);
+            painelPrincipal.setCenter(telaExame);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     public void fazerLogout() {
         System.exit(0);
     }

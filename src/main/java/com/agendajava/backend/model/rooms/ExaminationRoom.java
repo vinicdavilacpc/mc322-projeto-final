@@ -11,53 +11,50 @@ import com.agendajava.backend.exceptions.SchedulingConflict;
 import com.agendajava.backend.interfaces.Schedulable;
 import com.agendajava.backend.model.Equipment;
 import com.agendajava.backend.model.procedures.Procedure;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ExaminationRoom extends Room implements Schedulable {
 
-    public ExaminationRoom(String name, List<Equipment> equipments) {
+    @JsonCreator
+    public ExaminationRoom(
+            @JsonProperty("name") String name, 
+            @JsonProperty("equipments") List<Equipment> equipments) {
         super(name, equipments);
     }
 
     public boolean isAvailable(LocalDateTime startDateTime, Duration duration) {
         LocalDate date = startDateTime.toLocalDate();
         LocalTime startTime = startDateTime.toLocalTime();
-
         this.getCalendar().computeIfAbsent(date, d -> new TreeMap<>());
         TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
-
-        if (daymap.isEmpty()) // Não existe nenhum procedimento agendado nesse dia!
-            return true;
-
-        LocalTime priorProcedureStartTime = daymap.floorKey(startTime); // Horário de início do procedimento que começa antes do novo
+        
+        if (daymap.isEmpty()) return true;
+        
+        LocalTime priorProcedureStartTime = daymap.floorKey(startTime);
         if (priorProcedureStartTime != null && daymap.get(priorProcedureStartTime).overlapsWith(startDateTime, duration))
             return false;
-
-        LocalTime nextProcedureStartTime = daymap.ceilingKey(startTime); // Horário de início do procedimento que começa depois do novo
+            
+        LocalTime nextProcedureStartTime = daymap.ceilingKey(startTime);
         if (nextProcedureStartTime != null && daymap.get(nextProcedureStartTime).overlapsWith(startDateTime, duration))
             return false;
-
+            
         return true;
     }
 
     public void schedule(LocalDateTime startDateTime, Duration duration, Procedure procedure) {
         LocalDate date = startDateTime.toLocalDate();
         LocalTime startTime = startDateTime.toLocalTime();
-
         this.getCalendar().computeIfAbsent(date, d -> new TreeMap<>());
         TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
-
+        
         if (!isAvailable(startDateTime, duration)) {
-          
-            throw new SchedulingConflict ( 
-                "Horário indisponível!"
-            );
-        } 
-
+            throw new SchedulingConflict("Horário indisponível na sala!");
+        }
         daymap.put(startTime, procedure);
     }
 
     @Override
     public void cancel(Procedure procedure) {
-        // TODO: Implementar a lógica de cancelamento do calendário depois
     }
 }

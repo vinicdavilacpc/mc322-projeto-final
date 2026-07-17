@@ -16,6 +16,7 @@ import com.agendajava.backend.model.procedures.Examination;
 import com.agendajava.backend.model.procedures.Procedure;
 import com.agendajava.backend.model.procedures.Surgery;
 import com.agendajava.backend.model.rooms.ExaminationRoom;
+import com.agendajava.backend.model.rooms.Room;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
 import com.agendajava.backend.model.users.User;
@@ -47,6 +48,14 @@ public class Manager {
         User foundUser = dataManager.findOne(dataManager.getUsersFile(), User.class, u -> u.getEmail().equals(email));
         if (foundUser instanceof Doctor) {
             return (Doctor) foundUser;
+        }
+        return null;
+    }
+
+    public ExaminationRoom getExaminationRoomByName(String name) {
+        Room foundRoom = dataManager.findOne(dataManager.getRoomsFile(), Room.class, r -> r.getName().equals(name));
+        if (foundRoom instanceof ExaminationRoom) {
+            return (ExaminationRoom) foundRoom;
         }
         return null;
     }
