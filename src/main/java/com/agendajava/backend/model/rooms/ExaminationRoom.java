@@ -14,8 +14,8 @@ import com.agendajava.backend.model.procedures.Procedure;
 
 public class ExaminationRoom extends Room implements Schedulable {
 
-    public ExaminationRoom(String name, List<Equipment> equipments) {
-        super(name, equipments);
+    public ExaminationRoom(String name) {
+        super(name);
     }
 
     public boolean isAvailable(LocalDateTime startDateTime, Duration duration) {
@@ -47,12 +47,43 @@ public class ExaminationRoom extends Room implements Schedulable {
         TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
 
         if (!isAvailable(startDateTime, duration)) {
-          
             throw new SchedulingConflict ( 
                 "Horário indisponível!"
             );
         } 
 
         daymap.put(startTime, procedure);
+    }
+
+    public void cancel(Procedure procedure) {
+        LocalDateTime startDateTime = procedure.getStarDateTime();
+        LocalDate date = startDateTime.toLocalDate();
+        LocalTime startTime = startDateTime.toLocalTime();
+
+        TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
+        daymap.remove(startTime);
+    }
+
+    public LocalTime nextTimeAvailable(LocalDateTime startDateTime, Duration duration) {
+        LocalDate date = startDateTime.toLocalDate();
+        LocalTime startTime = startDateTime.toLocalTime();
+
+        this.getCalendar().computeIfAbsent(date, d -> new TreeMap<>());
+        TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
+
+        if (daymap.isEmpty()) // Não existe nenhum procedimento agendado nesse dia!
+            return true;
+
+        LocalTime priorProcedureStartTime = daymap.floorKey(startTime); // Horário de início do procedimento que começa antes do novo
+        if (priorProcedureStartTime != null && daymap.get(priorProcedureStartTime).overlapsWith(startDateTime, duration)) {
+            Duration priorProcedureDuration = daymap.get(priorProcedureStartTime).getDuration();
+            return priorProcedureStartTime.plus(priorProcedureDuration);
+        }
+
+        LocalTime nextProcedureStartTime = daymap.ceilingKey(startTime); // Horário de início do procedimento que começa depois do novo
+        if (nextProcedureStartTime != null && daymap.get(nextProcedureStartTime).overlapsWith(startDateTime, duration)) {
+            Duration nextProcedureDuration = daymap.get(nextProcedureStartTime).getDuration();
+            return nextProcedureStartTime.plus(nextProcedureDuration);
+        }
     }
 }

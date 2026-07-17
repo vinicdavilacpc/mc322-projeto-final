@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Duration;
+import java.time.LocalDate;
 
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.ProcedureDoesNotExist;
@@ -38,8 +39,8 @@ public class Manager {
     public Manager() {
         this.dataManager = new DataManager();
         this.authenticator = new Authenticator();
-        this.surgeryManager = new SurgeryManager();
         this.doctorManager = new DoctorManager(dataManager);
+        this.surgeryManager = new SurgeryManager(5, 8, doctorManager);
         this.user = null;
     }
 
@@ -147,7 +148,30 @@ public class Manager {
         return "Examination scheduled";
     }
 
-    public String surgeryScheduled();
+    public String surgeryCreated(String name, Patient patient, Specialty specialty, Priority priority, boolean icuNecessity, 
+                                Duration duration, int clinicalPriority, Duration estimatedRecoverDuration, LocalDate limitDate) {
+        try {
+            if (user == null) {
+                throw new UserNotLoggedIn("Log in to create a surgery"); 
+            }
+        } 
+        catch (UserNotLoggedIn e) {
+            return e.getMessage();
+        }
+        
+        Doctor doctor;
+        try {
+            doctor = (Doctor) user;
+        }
+        catch (ClassCastException e) {
+            return "Patients cannot create surgeries";
+        }
+
+        Surgery surgery = new Surgery(name, patient, specialty, priority, icuNecessity, duration, clinicalPriority, estimatedRecoverDuration, limitDate);
+        surgeryScheduler.addToPriorityLine(surgery);
+        
+        return "Surgery created";
+    };
 
     public String appointmentCanceled(Appointment appointment) {
         try {
@@ -239,7 +263,5 @@ public class Manager {
 
         return "Examination canceled";
     }
-
-    public String surgeryCanceled(Surgery surgery);
 }
 
