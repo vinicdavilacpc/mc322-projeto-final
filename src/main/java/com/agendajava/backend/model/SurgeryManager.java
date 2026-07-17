@@ -54,6 +54,9 @@ public class SurgeryManager {
         }
 
         this.icuRoom = new ICURoom("SALA RPA", nBedsICU); 
+
+
+        
     }
 
     public List<Surgery> getPLineOf(Specialty specialty) {

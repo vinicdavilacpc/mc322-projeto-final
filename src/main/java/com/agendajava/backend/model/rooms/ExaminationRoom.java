@@ -47,12 +47,20 @@ public class ExaminationRoom extends Room implements Schedulable {
         TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
 
         if (!isAvailable(startDateTime, duration)) {
-          
             throw new SchedulingConflict ( 
                 "Horário indisponível!"
             );
         } 
 
         daymap.put(startTime, procedure);
+    }
+
+    public void cancel(Procedure procedure) {
+        LocalDateTime startDateTime = procedure.getStarDateTime();
+        LocalDate date = startDateTime.toLocalDate();
+        LocalTime startTime = startDateTime.toLocalTime();
+
+        TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
+        daymap.remove(startTime);
     }
 }

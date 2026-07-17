@@ -89,6 +89,12 @@ public abstract class User implements Schedulable {
         daymap.put(startTime, procedure);
     }
 
-    public void cancel(Procedure procedure) { // TO DO: implementar esse método
+    public void cancel(Procedure procedure) {
+        LocalDateTime startDateTime = procedure.getStarDateTime();
+        LocalDate date = startDateTime.toLocalDate();
+        LocalTime startTime = startDateTime.toLocalTime();
+
+        TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
+        daymap.remove(startTime);
     }
 }
