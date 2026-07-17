@@ -7,7 +7,6 @@ import java.util.List;
 
 import com.agendajava.backend.model.Manager.Priority;
 import com.agendajava.backend.model.Manager.Specialty;
-import com.agendajava.backend.model.TimeBlock;
 import com.agendajava.backend.model.rooms.SurgeryRoom;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;

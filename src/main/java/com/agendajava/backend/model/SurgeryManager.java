@@ -6,9 +6,11 @@ import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.agendajava.backend.exceptions.ImpossibleSurgery;
 import com.agendajava.backend.model.Manager.Specialty;
 import com.agendajava.backend.model.procedures.Surgery;
 import com.agendajava.backend.model.rooms.ICURoom;
@@ -30,8 +32,9 @@ public class SurgeryManager {
     public SurgeryManager(int nSurgeryRooms, int nBedsICU, DoctorManager doctorManager) {
         this.doctorManager = doctorManager;
 
-        for (int i = 0; i < Specialty.values().length; i++) 
-            priorityLine.put(Specialty.values()[i], new ArrayList<>());
+        for (Specialty value : Specialty.values()) {
+            priorityLine.put(value, new ArrayList<>());
+        }
 
         /** Os blocos de horários dedicados a cada especialidade são parâmetros da própria clinica e devem ser fornecidos previamente.
          * Neste sistema estamos considerando a divisão apresentada no README. A ideia do hashmap de blocos de horários é poder encontrar
@@ -112,7 +115,7 @@ public class SurgeryManager {
                     while (!couldSchedule(surgery, startDateTime, 0)) {
                         try {
                             if (startDateTime.plusHours(1).isAfter(maxStartDateTime)) {
-                                throw new ImpossibleSurgery("Impossible to schedule " + surgery.getName + " for patient " + surgery.getPatient().getName() + "!\n"); 
+                                throw new ImpossibleSurgery("Impossible to schedule " + surgery.getName() + " for patient " + surgery.getPatient().getName() + "!\n"); 
                             } else {
                                 startDateTime = startDateTime.plusHours(1);
                             }
@@ -140,14 +143,14 @@ public class SurgeryManager {
                     while (!couldSchedule(surgery, startDateTime, 0)) { 
                         try {
                             if (startDateTime.plusHours(1).isAfter(maxStartDateTime)) {
-                                startDate = startDate.PlusDays(1);
+                                startDate = startDate.plusDays(1);
                                 while (!timeBlocks.containsKey(d)) { // Garante um dia da semana válido para a especialidade
                                     startDate = startDate.plusDays(1);
                                     maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1));
                                     maxStartDateTime = maxDateTime.minus(surgery.getDuration());
                                 }
                                 if (startDate.isAfter(surgery.getLimitDate())) {
-                                    throw new ImpossibleSurgery("Impossible to schedule " + surgery.getName + " for patient " + surgery.getPatient().getName() + "!\n"); 
+                                    throw new ImpossibleSurgery("Impossible to schedule " + surgery.getName() + " for patient " + surgery.getPatient().getName() + "!\n"); 
                                 }
                                 d = startDate.getDayOfWeek();
                                 startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0));
@@ -177,7 +180,7 @@ public class SurgeryManager {
                     // Obs: cirurgias eletivas nunca serão impossíveis de agendar
                     while (!couldSchedule(surgery, startDateTime, 1)) {
                         if (startDateTime.plusHours(1).isAfter(maxStartDateTime)) {
-                            startDate = startDate.PlusDays(1);
+                            startDate = startDate.plusDays(1);
                             while (!timeBlocks.containsKey(d)) { // Garante um dia da semana válido para a especialidade
                                 startDate = startDate.plusDays(1);
                                 maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1));

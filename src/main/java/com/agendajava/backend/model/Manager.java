@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Duration;
+import java.time.LocalDate;
 
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.ProcedureDoesNotExist;
@@ -262,7 +263,5 @@ public class Manager {
 
         return "Examination canceled";
     }
-
-    public String surgeryCanceled(Surgery surgery);
 }
 
