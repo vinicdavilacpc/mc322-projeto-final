@@ -39,39 +39,54 @@ public class ExameController {
             String nomeSala = salaInput.getText();
 
             if (nome.isEmpty() || data == null || horaStr.isEmpty() || duracaoStr.isEmpty() || nomeSala.isEmpty()) {
-                exibirMensagem("Preencha todos os campos!", "red");
+                exibirMensagem("Preencha todos os campos!", "#e74c3c");
+                return;
+            }
+
+            long minutos = Long.parseLong(duracaoStr);
+            if (minutos <= 0) {
+                exibirMensagem("A duração do exame deve ser maior que zero.", "#e74c3c");
                 return;
             }
 
             LocalTime hora = LocalTime.parse(horaStr);
             LocalDateTime startDateTime = LocalDateTime.of(data, hora);
-            Duration duration = Duration.ofMinutes(Long.parseLong(duracaoStr));
+            Duration duration = Duration.ofMinutes(minutos);
 
             ExaminationRoom room = manager.getExaminationRoomByName(nomeSala);
             if (room == null) {
-                exibirMensagem("Sala de exame não encontrada no sistema.", "red");
+                exibirMensagem("Sala de exame não encontrada no sistema.", "#e74c3c");
                 return;
             }
 
             String resultado = manager.examinationScheduled(nome, startDateTime, duration, room);
 
             if (resultado.equals("Examination scheduled")) {
-                exibirMensagem("Exame agendado com sucesso!", "green");
+                exibirMensagem("Exame agendado com sucesso!", "#2ecc71");
+                limparCampos();
             } else {
-                exibirMensagem(resultado, "red");
+                exibirMensagem(resultado, "#e74c3c");
             }
 
         } catch (DateTimeParseException e) {
-            exibirMensagem("Formato de hora inválido. Use HH:mm (ex: 14:30)", "red");
+            exibirMensagem("Formato de hora inválido. Use HH:mm (ex: 14:30)", "#e74c3c");
         } catch (NumberFormatException e) {
-            exibirMensagem("A duração deve ser um número inteiro (minutos).", "red");
+            exibirMensagem("A duração deve ser um número inteiro (minutos).", "#e74c3c");
         } catch (Exception e) {
-            exibirMensagem("Erro inesperado: " + e.getMessage(), "red");
+            exibirMensagem("Erro inesperado: " + e.getMessage(), "#e74c3c");
         }
     }
 
-    private void exibirMensagem(String texto, String cor) {
+    private void limparCampos() {
+        nomeInput.clear();
+        dataInput.setValue(null);
+        horaInput.clear();
+        duracaoInput.clear();
+        salaInput.clear();
+    }
+
+    private void exibirMensagem(String texto, String corHex) {
         mensagemFeedback.setText(texto);
-        mensagemFeedback.setStyle("-fx-text-fill: " + cor + ";");
+        mensagemFeedback.setStyle("-fx-text-fill: " + corHex + "; -fx-font-weight: bold;");
     }
 }
