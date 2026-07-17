@@ -12,8 +12,10 @@
             <Button onAction="#abrirTelaAgendamentos" text="Meus Agendamentos" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: BASELINE_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-border-color: transparent transparent #34495e transparent; -fx-border-width: 0 0 1 0; -fx-padding: 10 0 10 0;"/>
             <Button onAction="#abrirTelaMarcarConsulta" text="Marcar Consulta" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: BASELINE_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-border-color: transparent transparent #34495e transparent; -fx-border-width: 0 0 1 0; -fx-padding: 10 0 10 0;"/>
             <Button onAction="#abrirTelaMarcarExame" text="Marcar Exame" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: BASELINE_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-border-color: transparent transparent #34495e transparent; -fx-border-width: 0 0 1 0; -fx-padding: 10 0 10 0;"/>
+            <Button onAction="#abrirTelaMarcarCirurgia" text="Marcar Cirurgia" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: BASELINE_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-border-color: transparent transparent #34495e transparent; -fx-border-width: 0 0 1 0; -fx-padding: 10 0 10 0;"/>
             <VBox VBox.vgrow="ALWAYS" />
-            <Button onAction="#fazerLogout" text="Sair do Sistema" maxWidth="Infinity" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10; -fx-cursor: hand;"/>
+            <Button onAction="#processarFilaCirurgias" text="Rodar Algoritmo de Cirurgias" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #f39c12; -fx-alignment: BASELINE_LEFT; -fx-font-size: 14px; -fx-cursor: hand; -fx-border-color: transparent transparent #34495e transparent; -fx-border-width: 0 0 1 0; -fx-padding: 10 0 10 0; -fx-font-weight: bold;"/>
+            <Button onAction="#fazerLogout" text="Sair do Sistema" maxWidth="Infinity" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10; -fx-cursor: hand; -fx-margin: 10 0 0 0;"/>
          </children>
       </VBox>
    </left>

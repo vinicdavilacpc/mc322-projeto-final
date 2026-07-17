@@ -7,6 +7,8 @@ import com.agendajava.backend.model.Manager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 
 public class DashboardController {
@@ -58,6 +60,29 @@ public class DashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    @FXML
+    public void abrirTelaMarcarCirurgia() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agendajava/view/cirurgia.fxml"));
+            Parent telaCirurgia = loader.load();
+            CirurgiaController controller = loader.getController();
+            controller.setManager(this.manager);
+            painelPrincipal.setCenter(telaCirurgia);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void processarFilaCirurgias() {
+        String resultado = manager.processarFilaCirurgias();
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Processamento de Cirurgias");
+        alert.setHeaderText(null);
+        alert.setContentText(resultado);
+        alert.showAndWait();
     }
 
     @FXML

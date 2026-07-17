@@ -17,20 +17,18 @@ import com.agendajava.backend.model.rooms.ICURoom;
 import com.agendajava.backend.model.rooms.SurgeryRoom;
 import com.agendajava.backend.model.users.Doctor;
 
-/***
- * Classe que contém as filas de prioridade de cirurgia para cada especialidade
- */
 public class SurgeryManager {
     private Map<Specialty, List<Surgery>> priorityLine = new HashMap<>();
-    
-    // Filas de prioridade das cirurgias por especialidade
-    private Map<Specialty, Map<DayOfWeek, List<LocalTime>>> specialtyTimeBlocks = new HashMap<>(); // Blocos de horários de cada especialidade
+    private Map<Specialty, Map<DayOfWeek, List<LocalTime>>> specialtyTimeBlocks = new HashMap<>(); 
     private List<SurgeryRoom> surgeryRooms;
     private ICURoom icuRoom;
     private DoctorManager doctorManager;
+    private DataManager dataManager;
 
-    public SurgeryManager(int nSurgeryRooms, int nBedsICU, DoctorManager doctorManager) {
+    public SurgeryManager(int nSurgeryRooms, int nBedsICU, DoctorManager doctorManager, DataManager dataManager) {
         this.doctorManager = doctorManager;
+        this.dataManager = dataManager; 
+        
         for (Specialty value : Specialty.values()) {
             priorityLine.put(value, new ArrayList<>());
         }
@@ -84,14 +82,18 @@ public class SurgeryManager {
     }
 
     public String surgeryScheduler(ArrayList<Surgery> priorityLine, ArrayList<SurgeryRoom> rooms) {
-        List<Surgery> reschedule = new ArrayList<Surgery>(); 
         LocalDateTime startDateTime;
-        LocalDate date; 
-        LocalTime time; 
+        LocalDate startDate; 
+        DayOfWeek d; 
         
         for (Specialty currentSpecialty : Specialty.values()) {
             List<Surgery> surgeries = this.priorityLine.get(currentSpecialty);
-            
+            List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
+            List<Doctor> surgeons = doctorManager.getSurgeonsOf(currentSpecialty);
+            if (!surgeries.isEmpty() && (anestesists == null || anestesists.isEmpty() || surgeons == null || surgeons.isEmpty())) {
+                return "Erro: Faltam Cirurgiões ou Anestesistas de " + currentSpecialty + " cadastrados no sistema!";
+            }
+
             for (int j = 0; j < surgeries.size(); j++) {
                 Surgery surgery = surgeries.get(j); 
                 
@@ -113,30 +115,33 @@ public class SurgeryManager {
                     }
                 } else if (surgery.isUrgency()) {
                     Map<DayOfWeek, List<LocalTime>> timeBlocks = specialtyTimeBlocks.get(currentSpecialty); 
-                    LocalDate startDate = LocalDate.now().plusDays(1);
-                    DayOfWeek d = startDate.getDayOfWeek();
+                    
+                    if (timeBlocks == null) continue; 
+                    
+                    startDate = LocalDate.now().plusDays(1);
+                    d = startDate.getDayOfWeek();
                     while (!timeBlocks.containsKey(d)) { 
                         startDate = startDate.plusDays(1);
                         d = startDate.getDayOfWeek();
                     }
                     startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0)); 
-                    LocalDateTime maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1)); 
+                    LocalDateTime maxDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(1)); 
                     LocalDateTime maxStartDateTime = maxDateTime.minus(surgery.getDuration()); 
                     
                     while (!couldSchedule(surgery, startDateTime, 0)) { 
                         try {
                             if (startDateTime.plusHours(1).isAfter(maxStartDateTime)) {
-                                startDate = startDate.plusDays(1);
-                                while (!timeBlocks.containsKey(d)) { 
+                                do {
                                     startDate = startDate.plusDays(1);
-                                    maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1));
-                                    maxStartDateTime = maxDateTime.minus(surgery.getDuration());
-                                }
-                                if (startDate.isAfter(surgery.getLimitDate())) {
+                                    d = startDate.getDayOfWeek();
+                                } while (!timeBlocks.containsKey(d));
+                                
+                                if (surgery.getLimitDate() != null && startDate.isAfter(surgery.getLimitDate())) {
                                     throw new ImpossibleSurgery("Impossible to schedule " + surgery.getName() + " for patient " + surgery.getPatient().getName() + "!\n"); 
                                 }
-                                d = startDate.getDayOfWeek();
                                 startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0));
+                                maxDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(1));
+                                maxStartDateTime = maxDateTime.minus(surgery.getDuration());
                             } else {
                                 startDateTime = startDateTime.plusHours(1);
                             }
@@ -146,34 +151,50 @@ public class SurgeryManager {
                     }
                 } else {
                     Map<DayOfWeek, List<LocalTime>> timeBlocks = specialtyTimeBlocks.get(currentSpecialty); 
-                    LocalDate startDate = LocalDate.now().plusDays(1);
-                    DayOfWeek d = startDate.getDayOfWeek();
+                    
+                    if (timeBlocks == null) continue; 
+                    
+                    startDate = LocalDate.now().plusDays(1);
+                    d = startDate.getDayOfWeek();
                     while (!timeBlocks.containsKey(d)) { 
                         startDate = startDate.plusDays(1);
                         d = startDate.getDayOfWeek();
                     }
                     startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0)); 
-                    LocalDateTime maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1)); 
+                    LocalDateTime maxDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(1)); 
                     LocalDateTime maxStartDateTime = maxDateTime.minus(surgery.getDuration()); 
                     
                     while (!couldSchedule(surgery, startDateTime, 1)) {
-                        if (startDateTime.plusHours(1).isAfter(maxStartDateTime)) {
-                            startDate = startDate.plusDays(1);
-                            while (!timeBlocks.containsKey(d)) { 
-                                startDate = startDate.plusDays(1);
-                                maxDateTime = LocalDateTime.of(startDateTime.toLocalDate(), timeBlocks.get(d).get(1));
+                        try {
+                            if (startDateTime.plusHours(1).isAfter(maxStartDateTime)) {
+                                do {
+                                    startDate = startDate.plusDays(1);
+                                    d = startDate.getDayOfWeek();
+                                } while (!timeBlocks.containsKey(d));
+                                
+                                if (surgery.getLimitDate() != null && startDate.isAfter(surgery.getLimitDate())) {
+                                    throw new ImpossibleSurgery("Impossible to schedule " + surgery.getName() + " for patient " + surgery.getPatient().getName() + "!\n"); 
+                                }
+
+                                startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0));
+                                maxDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(1));
                                 maxStartDateTime = maxDateTime.minus(surgery.getDuration());
+                            } else {
+                                startDateTime = startDateTime.plusHours(1);
                             }
-                            d = startDate.getDayOfWeek();
-                            startDateTime = LocalDateTime.of(startDate, timeBlocks.get(d).get(0));
-                        } else {
-                            startDateTime = startDateTime.plusHours(1);
+                        } catch (ImpossibleSurgery e) {
+                            return e.getMessage();
                         }
                     }
                 } 
             } 
         } 
-        return "Agendamentos processados com sucesso";
+        
+        for (Specialty currentSpecialty : Specialty.values()) {
+            this.priorityLine.get(currentSpecialty).clear();
+        }
+        
+        return "Fila de Cirurgias processada com sucesso! Verifique em Meus Agendamentos."; 
     }
 
     private boolean couldSchedule(Surgery surgery, LocalDateTime startDateTime, int startRoom) {
@@ -197,6 +218,12 @@ public class SurgeryManager {
                                         anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
                                         surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
                                         surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
+                                        
+                                        surgery.setSurgeon(surgeons.get(b));
+                                        surgery.setRoom(surgeryRooms.get(c));
+                                        surgery.setStart(startDateTime);
+                                        dataManager.add(dataManager.getProceduresFile(), surgery);
+                                        
                                         return true;
                                     } else {
                                         return false;
@@ -205,6 +232,12 @@ public class SurgeryManager {
                                     anestesists.get(a).schedule(startDateTime, surgery.getDuration(), surgery);
                                     surgeons.get(b).schedule(startDateTime, surgery.getDuration(), surgery);
                                     surgeryRooms.get(c).schedule(startDateTime, surgery.getDuration(), surgery);
+                                    
+                                    surgery.setSurgeon(surgeons.get(b));
+                                    surgery.setRoom(surgeryRooms.get(c));
+                                    surgery.setStart(startDateTime);
+                                    dataManager.add(dataManager.getProceduresFile(), surgery);
+                                    
                                     return true;
                                 }
                             }

@@ -1,12 +1,11 @@
 package com.agendajava.backend.model;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
-import java.time.Duration;
-import java.time.LocalDate;
 
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.ProcedureDoesNotExist;
@@ -43,7 +42,7 @@ public class Manager {
         this.dataManager = new DataManager();
         this.authenticator = new Authenticator();
         this.doctorManager = new DoctorManager(dataManager);
-        this.surgeryManager = new SurgeryManager(5, 8, doctorManager);
+        this.surgeryManager = new SurgeryManager(5, 8, doctorManager, dataManager);
         this.user = null;
     }
 
@@ -326,5 +325,24 @@ public class Manager {
             }
         }
         return result;
+    }
+
+    public Patient getPatientByEmail(String email) {
+        User foundUser = dataManager.findOne(dataManager.getUsersFile(), User.class, u -> u.getEmail().equals(email));
+        if (foundUser instanceof Patient) {
+            return (Patient) foundUser;
+        }
+        return null;
+    }
+
+    public String processarFilaCirurgias() {
+        try {
+            if (user == null || !(user instanceof Doctor)) {
+                throw new WrongUser("Apenas médicos podem processar a fila de cirurgias.");
+            }
+        } catch (WrongUser e) {
+            return e.getMessage();
+        }
+        return surgeryManager.surgeryScheduler(null, null);
     }
 }

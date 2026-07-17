@@ -8,6 +8,13 @@
   "name" : "Doutor Teste",
   "email" : "medico@email.com",
   "password" : "123",
-  "specialty" : "CARDIOLOGIA",
+  "specialty" : "NEUROLOGIA",
   "surgeon" : false
+}, {
+  "type" : "doctor",
+  "name" : "Doutor Teste 2",
+  "email" : "medico2@email.com",
+  "password" : "123",
+  "specialty" : "NEUROLOGIA",
+  "surgeon" : true
 } ]

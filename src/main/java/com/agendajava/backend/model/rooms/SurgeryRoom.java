@@ -11,11 +11,20 @@ import com.agendajava.backend.exceptions.SchedulingConflict;
 import com.agendajava.backend.interfaces.Schedulable;
 import com.agendajava.backend.model.Equipment;
 import com.agendajava.backend.model.procedures.Procedure;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SurgeryRoom extends Room implements Schedulable {
     
     public SurgeryRoom(String name) {
         super(name);
+    }
+
+    @JsonCreator
+    public SurgeryRoom(
+            @JsonProperty("name") String name,
+            @JsonProperty("equipments") List<Equipment> equipments) {
+        super(name, equipments);
     }
 
     public boolean isAvailable(LocalDateTime startDateTime, Duration duration) {
