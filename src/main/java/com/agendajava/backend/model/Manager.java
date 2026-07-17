@@ -208,8 +208,11 @@ public class Manager {
         Patient patient = appointment.getPatient();
         Doctor doctor = appointment.getDoctor();
         try {
-            if (user != patient && user != doctor) {
-                throw new WrongUser("You do not have permission to cancel this examination");
+            boolean isPatient = patient != null && user.getEmail().equals(patient.getEmail());
+            boolean isDoctor = doctor != null && user.getEmail().equals(doctor.getEmail());
+            
+            if (!isPatient && !isDoctor) {
+                throw new WrongUser("You do not have permission to cancel this appointment");
             }
         } catch (WrongUser e) {
             return e.getMessage();
@@ -245,7 +248,7 @@ public class Manager {
             return "Doctors cannot cancel examinations";
         }
         try {
-            if (patient != examination.getPatient()) {
+            if (examination.getPatient() == null || !patient.getEmail().equals(examination.getPatient().getEmail())) {
                 throw new WrongUser("You do not have permission to cancel this examination");
             }
         } catch (WrongUser e) {
@@ -272,8 +275,8 @@ public class Manager {
         return "Em desenvolvimento";
     }
 
-    public List<String> getMeusProcedimentosFormatados() {
-        List<String> result = new ArrayList<>();
+    public List<Procedure> getMeusProcedimentos() {
+        List<Procedure> result = new ArrayList<>();
         if (user == null) return result;
         
         List<Procedure> procedures = dataManager.findAll(dataManager.getProceduresFile(), Procedure.class);
@@ -296,10 +299,7 @@ public class Manager {
             }
             
             if (isMine) {
-                String detalhes = p.getName() + " | Data: " + p.getStarDateTime().toLocalDate() + 
-                                  " às " + p.getStarDateTime().toLocalTime() + 
-                                  " | Duração: " + p.getDuration().toMinutes() + "min";
-                result.add(detalhes);
+                result.add(p);
             }
         }
         return result;
