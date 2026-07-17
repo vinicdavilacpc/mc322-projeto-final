@@ -24,12 +24,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = Doctor.class, name = "doctor"),
     @JsonSubTypes.Type(value = Patient.class, name = "patient")
 })
-
 public abstract class User implements Schedulable {
     private String name;
     private String email;
     private String password;
-
+    
     @JsonIgnore
     private Calendar calendar;
 
@@ -37,7 +36,7 @@ public abstract class User implements Schedulable {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.calendar = new Calendar(); // TO DO: entender como é salvo no Json
+        this.calendar = new Calendar();
     }
 
     public String getName() {
@@ -52,7 +51,6 @@ public abstract class User implements Schedulable {
         return this.password;
     }
 
-    /* Já retorna o calendário em um formato acessável! */
     @JsonIgnore
     public Map<LocalDate, TreeMap<LocalTime, Procedure>> getCalendar() {
         return this.calendar.get();
@@ -65,14 +63,13 @@ public abstract class User implements Schedulable {
         this.getCalendar().computeIfAbsent(date, d -> new TreeMap<>());
         TreeMap<LocalTime, Procedure> daymap = this.getCalendar().get(date);
 
-        if (daymap.isEmpty()) // Não existe nenhum procedimento agendado nesse dia!
-            return true;
+        if (daymap.isEmpty()) return true;
 
-        LocalTime priorProcedureStartTime = daymap.floorKey(startTime); // Horário de início do procedimento que começa antes do novo
+        LocalTime priorProcedureStartTime = daymap.floorKey(startTime);
         if (priorProcedureStartTime != null && daymap.get(priorProcedureStartTime).overlapsWith(startDateTime, duration))
             return false;
 
-        LocalTime nextProcedureStartTime = daymap.ceilingKey(startTime); // Horário de início do procedimento que começa depois do novo
+        LocalTime nextProcedureStartTime = daymap.ceilingKey(startTime);
         if (nextProcedureStartTime != null && daymap.get(nextProcedureStartTime).overlapsWith(startDateTime, duration))
             return false;
 
@@ -89,10 +86,9 @@ public abstract class User implements Schedulable {
         if (!isAvailable(startDateTime, duration)) {
             throw new SchedulingConflict("User is unavailable at that time");
         } 
-
         daymap.put(startTime, procedure);
     }
 
-    public void cancel(Procedure procedure) { // TO DO: implementar esse método
+    public void cancel(Procedure procedure) {
     }
 }

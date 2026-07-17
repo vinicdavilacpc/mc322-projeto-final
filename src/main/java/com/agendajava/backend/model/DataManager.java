@@ -135,4 +135,9 @@ public class DataManager implements Persistable {
         List<T> list = jsonToList(fileName, type);
         return list.stream().filter(filter).findFirst().orElse(null);
     }
+
+    @Override
+    public <T> List<T> findAll(String fileName, Class<T> type) {
+        return jsonToList(fileName, type);
+    }
 }

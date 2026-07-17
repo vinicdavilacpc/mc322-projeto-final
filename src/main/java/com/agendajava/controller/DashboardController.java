@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.BorderPane;
 
 public class DashboardController {
+
     @FXML
     private BorderPane painelPrincipal;
 
@@ -24,12 +25,9 @@ public class DashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agendajava/view/consulta.fxml"));
             Parent telaConsulta = loader.load();
-
             ConsultaController controller = loader.getController();
             controller.setManager(this.manager);
-
             painelPrincipal.setCenter(telaConsulta);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,11 +35,20 @@ public class DashboardController {
 
     @FXML
     public void abrirTelaAgendamentos() {
-        System.out.println("Abrindo agendamentos...");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agendajava/view/agendamentos.fxml"));
+            Parent telaAgendamentos = loader.load();
+            AgendamentosController controller = loader.getController();
+            controller.setManager(this.manager);
+            controller.carregarAgendamentos();
+            painelPrincipal.setCenter(telaAgendamentos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     public void fazerLogout() {
-        System.out.println("Saindo do sistema...");
+        System.exit(0);
     }
 }
