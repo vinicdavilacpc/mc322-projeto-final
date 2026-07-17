@@ -92,7 +92,7 @@ public class SurgeryManager {
      * Algoritmo que agenda cirurgias de acordo com uma fila de prioridade
      * @return
      */
-    public void surgeryScheduler(ArrayList<Surgery> priorityLine, ArrayList<SurgeryRoom> rooms) {
+    public String surgeryScheduler(ArrayList<Surgery> priorityLine, ArrayList<SurgeryRoom> rooms) {
         List<Surgery> reschedule = new ArrayList<Surgery>(); // Cirurgias que precisarão ser realocadas
         LocalDateTime startDateTime;
         LocalDate date; // Data para marcar a cirurgia
@@ -202,8 +202,9 @@ public class SurgeryManager {
      */
     private boolean couldSchedule(Surgery surgery, LocalDateTime startDateTime, int startRoom) {
         /* #3 - Seleciona o anestesista */
-        currentSpecialty = surgery.getSpecialty();
+        Specialty currentSpecialty = surgery.getSpecialty();
         List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
+        boolean scheduled = false;
 
         for (int a = 0; a < anestesists.size() && !scheduled; a++) {
             if (anestesists.get(a).isAvailable(startDateTime, surgery.getDuration())) {
@@ -240,5 +241,6 @@ public class SurgeryManager {
                 }
             }
         }
+        return false;
     }
 }

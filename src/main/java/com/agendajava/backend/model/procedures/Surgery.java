@@ -36,13 +36,13 @@ public class Surgery extends Procedure {
             @JsonProperty("patient") Patient patient,
             @JsonProperty("specialty") Specialty specialty,
             @JsonProperty("priority") Priority priority,
-            @JsonProperty("icuNecessity") boolean icuNecessity;
+            @JsonProperty("icuNecessity") boolean icuNecessity,
             @JsonProperty("estimatedDuration") Duration duration,
             @JsonProperty("clinicalPriority") int clinicalPriority,
             @JsonProperty("estimatedRecoverDuration") Duration estimatedRecoverDuration,
             @JsonProperty("limitDate") LocalDate limitDate) {
 
-        estimatedDuration = duration.plus(turnoverTime); // A duração estimada total da cirurgia envolve o tempo de turnover
+        Duration estimatedDuration = duration.plus(turnoverTime); // A duração estimada total da cirurgia envolve o tempo de turnover
         super(name, null, estimatedDuration, patient);
         this.specialty = specialty;
         this.priority = priority;

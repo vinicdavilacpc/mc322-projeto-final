@@ -215,7 +215,7 @@ public class Manager {
         }
 
         Surgery surgery = new Surgery(name, patient, specialty, priority, icuNecessity, duration, clinicalPriority, estimatedRecoverDuration, limitDate);
-        surgeryScheduler.addToPriorityLine(surgery);
+        surgeryManager.addToPriorityLine(surgery);
         
         return "Surgery created";
     };
