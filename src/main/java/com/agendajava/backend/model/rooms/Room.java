@@ -33,13 +33,9 @@ public class Room {
     
     @JsonIgnore
     private Calendar calendar;
-    
-    private List<Equipment> equipments = new ArrayList<>();
 
-    public Room(String name, List<Equipment> equipments) {
+    public Room(String name) {
         this.name = name;
-        this.equipments = equipments != null ? equipments : new ArrayList<>();
-        this.calendar = new Calendar();
     }
 
     public String getName() {

@@ -25,4 +25,8 @@ public class Examination extends Procedure {
         super(name, time, duration, patient);
         this.room = room;
     }
+
+    public ExaminationRoom getRoom() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
