@@ -14,8 +14,8 @@ import com.agendajava.backend.model.procedures.Procedure;
 
 public class ExaminationRoom extends Room implements Schedulable {
 
-    public ExaminationRoom(String name, List<Equipment> equipments) {
-        super(name, equipments);
+    public ExaminationRoom(String name) {
+        super(name);
     }
 
     public boolean isAvailable(LocalDateTime startDateTime, Duration duration) {

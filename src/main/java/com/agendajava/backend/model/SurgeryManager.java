@@ -19,8 +19,11 @@ import com.agendajava.backend.model.rooms.SurgeryRoom;
 public class SurgeryManager {
     private Map<Specialty, List<Surgery>> priorityLine = new HashMap<>();          // Filas de prioridade das cirurgias por especialidade
     private Map<Specialty, List<TimeBlock>> specialtyTimeBlocks = new HashMap<>(); // Blocos de horários de cada especialidade
+    private List<SurgeryRoom> surgeryRooms;
+    private ICURoom icuRoom;
 
-    public SurgeryManager() {
+
+    public SurgeryManager(int nSurgeryRooms, int nBedsICU) {
         for (int i = 0; i < Specialty.values().length; i++) 
             priorityLine.put(Specialty.values()[i], new ArrayList<>());
 
@@ -44,6 +47,13 @@ public class SurgeryManager {
         specialtyTimeBlocks.get(Specialty.ORTOPEDIA).add(new TimeBlock(DayOfWeek.valueOf("MONDAY"), LocalTime.of(7, 0), LocalTime.of(12, 0)));
         specialtyTimeBlocks.get(Specialty.ORTOPEDIA).add(new TimeBlock(DayOfWeek.valueOf("WEDNESDAY"), LocalTime.of(7, 0), LocalTime.of(12, 0)));
         specialtyTimeBlocks.get(Specialty.ORTOPEDIA).add(new TimeBlock(DayOfWeek.valueOf("FRIDAY"), LocalTime.of(13, 0), LocalTime.of(18, 0)));
+
+        this.surgeryRooms = new ArrayList<SurgeryRoom>();
+        for (int i = 0; i < nSurgeryRooms; i++) {
+            surgeryRooms.add(new SurgeryRoom("SC0" + i));
+        }
+
+        this.icuRoom = new ICURoom("SALA RPA", nBedsICU); 
     }
 
     public List<Surgery> getPLineOf(Specialty specialty) {

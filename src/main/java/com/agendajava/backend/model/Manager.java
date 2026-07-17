@@ -38,7 +38,7 @@ public class Manager {
     public Manager() {
         this.dataManager = new DataManager();
         this.authenticator = new Authenticator();
-        this.surgeryManager = new SurgeryManager();
+        this.surgeryManager = new SurgeryManager(5, 8);
         this.doctorManager = new DoctorManager(dataManager);
         this.user = null;
     }
