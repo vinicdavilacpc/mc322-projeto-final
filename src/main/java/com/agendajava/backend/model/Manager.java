@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.ProcedureDoesNotExist;
@@ -44,10 +45,56 @@ public class Manager {
         this.user = null;
     }
 
+    private void populateUserCalendar(User u) {
+        if (u == null) return;
+        List<Procedure> procedures = dataManager.findAll(dataManager.getProceduresFile(), Procedure.class);
+        if (procedures == null) return;
+        
+        for (Procedure p : procedures) {
+            boolean isMine = false;
+            if (p.getPatient() != null && p.getPatient().getEmail().equals(u.getEmail())) {
+                isMine = true;
+            } else if (p instanceof Appointment) {
+                Appointment app = (Appointment) p;
+                if (app.getDoctor() != null && app.getDoctor().getEmail().equals(u.getEmail())) {
+                    isMine = true;
+                }
+            } else if (p instanceof Surgery) {
+                Surgery surg = (Surgery) p;
+                if (surg.getDoctor() != null && surg.getDoctor().getEmail().equals(u.getEmail())) {
+                    isMine = true;
+                }
+            }
+            
+            if (isMine) {
+                u.getCalendar().computeIfAbsent(p.getStarDateTime().toLocalDate(), k -> new TreeMap<>())
+                 .put(p.getStarDateTime().toLocalTime(), p);
+            }
+        }
+    }
+
+    private void populateRoomCalendar(Room r) {
+        if (r == null) return;
+        List<Procedure> procedures = dataManager.findAll(dataManager.getProceduresFile(), Procedure.class);
+        if (procedures == null) return;
+        
+        for (Procedure p : procedures) {
+            if (p instanceof Examination) {
+                Examination ex = (Examination) p;
+                if (ex.getRoom() != null && ex.getRoom().getName().equals(r.getName())) {
+                    r.getCalendar().computeIfAbsent(p.getStarDateTime().toLocalDate(), k -> new TreeMap<>())
+                     .put(p.getStarDateTime().toLocalTime(), p);
+                }
+            }
+        }
+    }
+
     public Doctor getDoctorByEmail(String email) {
         User foundUser = dataManager.findOne(dataManager.getUsersFile(), User.class, u -> u.getEmail().equals(email));
         if (foundUser instanceof Doctor) {
-            return (Doctor) foundUser;
+            Doctor doc = (Doctor) foundUser;
+            populateUserCalendar(doc);
+            return doc;
         }
         return null;
     }
@@ -55,7 +102,9 @@ public class Manager {
     public ExaminationRoom getExaminationRoomByName(String name) {
         Room foundRoom = dataManager.findOne(dataManager.getRoomsFile(), Room.class, r -> r.getName().equals(name));
         if (foundRoom instanceof ExaminationRoom) {
-            return (ExaminationRoom) foundRoom;
+            ExaminationRoom room = (ExaminationRoom) foundRoom;
+            populateRoomCalendar(room);
+            return room;
         }
         return null;
     }
@@ -63,6 +112,7 @@ public class Manager {
     public String loginSuccessful(String email, String password) {
         try {
             user = authenticator.login(email, password, dataManager);
+            populateUserCalendar(user);
         } catch (InvalidLogin e) {
             return e.getMessage();
         }
@@ -72,6 +122,7 @@ public class Manager {
     public String registrationSuccessful(String name, String email, String password, String role, Specialty specialty, DataManager dataManager) {
         try {
             user = authenticator.register(name, email, password, role, specialty, dataManager);
+            populateUserCalendar(user);
         } catch (UserAlreadyExists e) {
             return e.getMessage();
         }
