@@ -11,6 +11,7 @@ import com.agendajava.backend.model.Calendar;
 import com.agendajava.backend.model.Equipment;
 import com.agendajava.backend.model.procedures.Procedure;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -23,8 +24,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = ExaminationRoom.class, name = "examinationRoom"),
     @JsonSubTypes.Type(value = SurgeryRoom.class, name = "surgeryRoom")
 })
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Room {
     private String name;
+    
+    @JsonIgnore
     private int ID;
     
     @JsonIgnore
@@ -42,6 +46,7 @@ public class Room {
         return this.name;
     }
 
+    @JsonIgnore
     public int getID() {
         return this.ID;
     }

@@ -1,7 +1,7 @@
 [ {
   "type" : "examination",
-  "name" : "Teste",
-  "starDateTime" : [ 2026, 7, 21, 10, 0 ],
+  "name" : "Teste Exame",
+  "starDateTime" : [ 2026, 7, 20, 10, 0 ],
   "duration" : 1800.000000000,
   "patient" : {
     "type" : "patient",
@@ -14,7 +14,62 @@
     "name" : "Sala 1",
     "equipments" : [ {
       "name" : "Aparelho de Raio-X"
-    } ],
-    "id" : 0
+    } ]
+  }
+}, {
+  "type" : "appointment",
+  "name" : "Teste Consulta",
+  "starDateTime" : [ 2026, 7, 22, 14, 0 ],
+  "duration" : 3000.000000000,
+  "patient" : {
+    "type" : "patient",
+    "name" : "Paciente de Teste",
+    "email" : "paciente@email.com",
+    "password" : "123"
+  },
+  "doctor" : {
+    "type" : "doctor",
+    "name" : "Doutor Teste",
+    "email" : "medico@email.com",
+    "password" : "123",
+    "specialty" : "CARDIOLOGIA",
+    "surgeon" : false
+  }
+}, {
+  "type" : "appointment",
+  "name" : "Teste Consulta 2",
+  "starDateTime" : [ 2026, 7, 29, 15, 0 ],
+  "duration" : 1800.000000000,
+  "patient" : {
+    "type" : "patient",
+    "name" : "Paciente de Teste",
+    "email" : "paciente@email.com",
+    "password" : "123"
+  },
+  "doctor" : {
+    "type" : "doctor",
+    "name" : "Doutor Teste",
+    "email" : "medico@email.com",
+    "password" : "123",
+    "specialty" : "CARDIOLOGIA",
+    "surgeon" : false
+  }
+}, {
+  "type" : "examination",
+  "name" : "Teste Exame 2",
+  "starDateTime" : [ 2026, 8, 19, 8, 0 ],
+  "duration" : 3600.000000000,
+  "patient" : {
+    "type" : "patient",
+    "name" : "Paciente de Teste",
+    "email" : "paciente@email.com",
+    "password" : "123"
+  },
+  "room" : {
+    "type" : "examinationRoom",
+    "name" : "Sala 1",
+    "equipments" : [ {
+      "name" : "Aparelho de Raio-X"
+    } ]
   }
 } ]
