@@ -10,7 +10,7 @@
    <children>
       <VBox alignment="CENTER" spacing="15.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="60.0" AnchorPane.bottomAnchor="60.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5); -fx-padding: 30;">
          <children>
-            <Label text="Agenda J (Va)" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+            <Label text="Agenda Já(Va)" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
             <VBox spacing="5.0" prefWidth="250.0">
                <Label text="E-mail" style="-fx-text-fill: #7f8c8d; -fx-font-weight: bold;"/>
                <TextField fx:id="emailInput" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
