@@ -3,13 +3,12 @@ package com.agendajava.backend.model;
 import com.agendajava.backend.model.users.Doctor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-@ExtendWith(MockitoExtension.class)
+import static org.mockito.MockitoAnnotations.initMocks;
+
 class DoctorManagerTest {
 
     @Mock
@@ -18,7 +17,8 @@ class DoctorManagerTest {
     private DoctorManager doctorManagerUnderTest;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        initMocks(this);
         doctorManagerUnderTest = new DoctorManager(mockDataManager);
     }
 
@@ -41,10 +41,10 @@ class DoctorManagerTest {
     }
 
     @Test
-    void testGetAnestesistsOf() {
+    void testGetAnestesists() {
         // Setup
         // Run the test
-        final List<Doctor> result = doctorManagerUnderTest.getAnestesistsOf(Manager.Specialty.ANESTESIOLOGIA);
+        final List<Doctor> result = doctorManagerUnderTest.getAnestesists();
 
         // Verify the results
     }

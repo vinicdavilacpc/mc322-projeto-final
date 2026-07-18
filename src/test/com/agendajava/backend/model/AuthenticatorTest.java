@@ -4,7 +4,7 @@ import com.agendajava.backend.model.users.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class AuthenticatorTest {
 
@@ -47,6 +47,6 @@ class AuthenticatorTest {
         final boolean result = authenticatorUnderTest.userExists("email", dataManager);
 
         // Verify the results
-        assertThat(result).isFalse();
+        assertFalse(result);
     }
 }

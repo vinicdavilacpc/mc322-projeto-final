@@ -1,9 +1,14 @@
 package com.agendajava.backend.model.rooms;
 
+import com.agendajava.backend.model.procedures.Procedure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ICURoomTest {
 
@@ -17,25 +22,23 @@ class ICURoomTest {
     @Test
     void testHasBedsAvailable() {
         // Setup
-        final LocalDateTime startDateTime = null;
-        final Duration duration = null;
+        final Duration duration = Duration.ofDays(0L);
 
         // Run the test
-        final boolean result = icuRoomUnderTest.hasBedsAvailable(startDateTime, duration);
+        final boolean result = icuRoomUnderTest.hasBedsAvailable(LocalDateTime.of(2020, 1, 1, 0, 0, 0), duration);
 
         // Verify the results
-        assertThat(result).isFalse();
+        assertFalse(result);
     }
 
     @Test
     void testBedSchedule() {
         // Setup
-        final LocalDateTime startDateTime = null;
-        final Duration duration = null;
+        final Duration duration = Duration.ofDays(0L);
         final Procedure procedure = null;
 
         // Run the test
-        icuRoomUnderTest.bedSchedule(startDateTime, duration, procedure);
+        icuRoomUnderTest.bedSchedule(LocalDateTime.of(2020, 1, 1, 0, 0, 0), duration, procedure);
 
         // Verify the results
     }
@@ -60,6 +63,6 @@ class ICURoomTest {
 
     @Test
     void testGetBedNumber() {
-        assertThat(icuRoomUnderTest.getBedNumber()).isEqualTo(0);
+        assertEquals(0, icuRoomUnderTest.getBedNumber());
     }
 }

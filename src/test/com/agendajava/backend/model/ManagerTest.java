@@ -7,6 +7,7 @@ import com.agendajava.backend.model.procedures.Surgery;
 import com.agendajava.backend.model.rooms.ExaminationRoom;
 import com.agendajava.backend.model.users.Doctor;
 import com.agendajava.backend.model.users.Patient;
+import com.agendajava.backend.model.users.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ManagerTest {
 
@@ -51,48 +52,53 @@ class ManagerTest {
         final String result = managerUnderTest.loginSuccessful("email", "password");
 
         // Verify the results
-        assertThat(result).isEqualTo("Login sucessful");
+        assertEquals("Login sucessful", result);
     }
 
     @Test
     void testRegistrationSuccessful() {
         // Setup
-        final DataManager dataManager = new DataManager();
-
         // Run the test
         final String result = managerUnderTest.registrationSuccessful("name", "email", "password", "role",
-                Manager.Specialty.ANESTESIOLOGIA, dataManager);
+                Manager.Specialty.ANESTESIOLOGIA);
 
         // Verify the results
-        assertThat(result).isEqualTo("Registration sucessful");
+        assertEquals("Registration sucessful", result);
+    }
+
+    @Test
+    void testGetCurrentUser() {
+        final User result = managerUnderTest.getCurrentUser();
     }
 
     @Test
     void testAppointmentScheduled() {
         // Setup
         final Duration duration = Duration.ofDays(0L);
+        final Patient patient = new Patient("name", "email", "password");
         final Doctor doctor = new Doctor("name", "email", "password", Manager.Specialty.ANESTESIOLOGIA, false);
 
         // Run the test
         final String result = managerUnderTest.appointmentScheduled("name", LocalDateTime.of(2020, 1, 1, 0, 0, 0),
-                duration, doctor);
+                duration, patient, doctor);
 
         // Verify the results
-        assertThat(result).isEqualTo("Appointment scheduled");
+        assertEquals("Appointment scheduled", result);
     }
 
     @Test
     void testExaminationScheduled() {
         // Setup
         final Duration duration = Duration.ofDays(0L);
-        final ExaminationRoom room = new ExaminationRoom("name", List.of());
+        final Patient patient = new Patient("name", "email", "password");
+        final ExaminationRoom room = new ExaminationRoom("name", List.of(new Equipment("name")));
 
         // Run the test
         final String result = managerUnderTest.examinationScheduled("name", LocalDateTime.of(2020, 1, 1, 0, 0, 0),
-                duration, room);
+                duration, patient, room);
 
         // Verify the results
-        assertThat(result).isEqualTo("Doctors cannot schedule examinations");
+        assertEquals("Apenas médicos podem agendar exames.", result);
     }
 
     @Test
@@ -107,7 +113,7 @@ class ManagerTest {
                 Manager.Priority.ELETIVA, false, duration, 0, estimatedRecoverDuration, LocalDate.of(2020, 1, 1));
 
         // Verify the results
-        assertThat(result).isEqualTo("Patients cannot create surgeries");
+        assertEquals("Patients cannot create surgeries", result);
     }
 
     @Test
@@ -121,27 +127,21 @@ class ManagerTest {
         final String result = managerUnderTest.appointmentCanceled(appointment);
 
         // Verify the results
-        assertThat(result).isEqualTo("Appointment canceled");
+        assertEquals("Appointment canceled", result);
     }
 
     @Test
     void testExaminationCanceled() {
         // Setup
         final Examination examination = new Examination("name", LocalDateTime.of(2020, 1, 1, 0, 0, 0),
-                Duration.ofDays(0L), new Patient("name", "email", "password"), new ExaminationRoom("name", List.of()));
+                Duration.ofDays(0L), new Patient("name", "email", "password"),
+                new ExaminationRoom("name", List.of(new Equipment("name"))));
 
         // Run the test
         final String result = managerUnderTest.examinationCanceled(examination);
 
         // Verify the results
-        assertThat(result).isEqualTo("Doctors cannot cancel examinations");
-    }
-
-    @Test
-    void testSurgeryCanceled() {
-        assertThat(managerUnderTest.surgeryCanceled(
-                new Surgery("name", new Patient("name", "email", "password"), Manager.Specialty.ANESTESIOLOGIA,
-                        Manager.Priority.ELETIVA, false))).isEqualTo("Em desenvolvimento");
+        assertEquals("Doctors cannot cancel examinations", result);
     }
 
     @Test
@@ -149,6 +149,57 @@ class ManagerTest {
         // Setup
         // Run the test
         final List<Procedure> result = managerUnderTest.getMeusProcedimentos();
+
+        // Verify the results
+    }
+
+    @Test
+    void testGetPatientByEmail() {
+        // Setup
+        // Run the test
+        final Patient result = managerUnderTest.getPatientByEmail("email");
+
+        // Verify the results
+    }
+
+    @Test
+    void testProcessarFilaCirurgias() {
+        // Setup
+        // Run the test
+        final String result = managerUnderTest.processarFilaCirurgias();
+
+        // Verify the results
+        assertEquals("result", result);
+    }
+
+    @Test
+    void testSurgeryCanceled() {
+        // Setup
+        final Surgery surgery = new Surgery("name", new Patient("name", "email", "password"),
+                Manager.Specialty.ANESTESIOLOGIA, Manager.Priority.ELETIVA, false, Duration.ofDays(0L), 0,
+                Duration.ofDays(0L), LocalDate.of(2020, 1, 1));
+
+        // Run the test
+        final String result = managerUnderTest.surgeryCanceled(surgery);
+
+        // Verify the results
+        assertEquals("Cirurgia cancelada com sucesso", result);
+    }
+
+    @Test
+    void testGetTodosMedicos() {
+        // Setup
+        // Run the test
+        final List<Doctor> result = managerUnderTest.getTodosMedicos();
+
+        // Verify the results
+    }
+
+    @Test
+    void testGetTodosPacientes() {
+        // Setup
+        // Run the test
+        final List<Patient> result = managerUnderTest.getTodosPacientes();
 
         // Verify the results
     }

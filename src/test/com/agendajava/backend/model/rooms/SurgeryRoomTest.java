@@ -1,5 +1,6 @@
 package com.agendajava.backend.model.rooms;
 
+import com.agendajava.backend.model.Equipment;
 import com.agendajava.backend.model.procedures.Procedure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,15 +10,16 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class ExaminationRoomTest {
+class SurgeryRoomTest {
 
-    private ExaminationRoom examinationRoomUnderTest;
+    private SurgeryRoom surgeryRoomUnderTest;
 
     @BeforeEach
     void setUp() {
-        examinationRoomUnderTest = new ExaminationRoom("name", List.of());
+        surgeryRoomUnderTest = new SurgeryRoom("name", List.of(new Equipment("name")));
     }
 
     @Test
@@ -26,10 +28,10 @@ class ExaminationRoomTest {
         final Duration duration = Duration.ofDays(0L);
 
         // Run the test
-        final boolean result = examinationRoomUnderTest.isAvailable(LocalDateTime.of(2020, 1, 1, 0, 0, 0), duration);
+        final boolean result = surgeryRoomUnderTest.isAvailable(LocalDateTime.of(2020, 1, 1, 0, 0, 0), duration);
 
         // Verify the results
-        assertThat(result).isFalse();
+        assertFalse(result);
     }
 
     @Test
@@ -39,7 +41,7 @@ class ExaminationRoomTest {
         final Procedure procedure = null;
 
         // Run the test
-        examinationRoomUnderTest.schedule(LocalDateTime.of(2020, 1, 1, 0, 0, 0), duration, procedure);
+        surgeryRoomUnderTest.schedule(LocalDateTime.of(2020, 1, 1, 0, 0, 0), duration, procedure);
 
         // Verify the results
     }
@@ -50,7 +52,7 @@ class ExaminationRoomTest {
         final Procedure procedure = null;
 
         // Run the test
-        examinationRoomUnderTest.cancel(procedure);
+        surgeryRoomUnderTest.cancel(procedure);
 
         // Verify the results
     }
@@ -61,10 +63,10 @@ class ExaminationRoomTest {
         final Duration duration = Duration.ofDays(0L);
 
         // Run the test
-        final LocalTime result = examinationRoomUnderTest.nextTimeAvailable(LocalDateTime.of(2020, 1, 1, 0, 0, 0),
+        final LocalTime result = surgeryRoomUnderTest.nextTimeAvailable(LocalDateTime.of(2020, 1, 1, 0, 0, 0),
                 duration);
 
         // Verify the results
-        assertThat(result).isEqualTo(LocalTime.of(0, 0, 0));
+        assertEquals(LocalTime.of(0, 0, 0), result);
     }
 }

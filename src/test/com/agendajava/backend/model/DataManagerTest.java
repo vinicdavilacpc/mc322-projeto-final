@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.function.Predicate;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DataManagerTest {
 
@@ -19,17 +19,17 @@ class DataManagerTest {
 
     @Test
     void testGetUsersFile() {
-        assertThat(dataManagerUnderTest.getUsersFile()).isEqualTo("users.json");
+        assertEquals("users.json", dataManagerUnderTest.getUsersFile());
     }
 
     @Test
     void testGetProceduresFile() {
-        assertThat(dataManagerUnderTest.getProceduresFile()).isEqualTo("procedures.json");
+        assertEquals("procedures.json", dataManagerUnderTest.getProceduresFile());
     }
 
     @Test
     void testGetRoomsFile() {
-        assertThat(dataManagerUnderTest.getRoomsFile()).isEqualTo("rooms.json");
+        assertEquals("rooms.json", dataManagerUnderTest.getRoomsFile());
     }
 
     @Test
@@ -92,7 +92,7 @@ class DataManagerTest {
         final String result = dataManagerUnderTest.findOne("fileName", String.class, filter);
 
         // Verify the results
-        assertThat(result).isEqualTo("result");
+        assertEquals("result", result);
     }
 
     @Test
@@ -102,6 +102,6 @@ class DataManagerTest {
         final List<String> result = dataManagerUnderTest.findAll("fileName", String.class);
 
         // Verify the results
-        assertThat(result).isEqualTo(List.of("value"));
+        assertEquals(List.of("value"), result);
     }
 }
