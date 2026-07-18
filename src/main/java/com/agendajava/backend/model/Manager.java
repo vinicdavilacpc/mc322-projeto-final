@@ -119,9 +119,9 @@ public class Manager {
         return "Login sucessful";
     }
 
-    public String registrationSuccessful(String name, String email, String password, String role, Specialty specialty, DataManager dataManager) {
+    public String registrationSuccessful(String name, String email, String password, String role, Specialty specialty) {
         try {
-            user = authenticator.register(name, email, password, role, specialty, dataManager);
+            user = authenticator.register(name, email, password, role, specialty, this.dataManager);
             populateUserCalendar(user);
         } catch (UserAlreadyExists e) {
             return e.getMessage();
@@ -278,10 +278,6 @@ public class Manager {
         return "Examination canceled";
     }
 
-    public String surgeryCanceled(Surgery surgery) {
-        return "Em desenvolvimento";
-    }
-
     public List<Procedure> getMeusProcedimentos() {
         List<Procedure> result = new ArrayList<>();
         if (user == null) return result;
@@ -329,5 +325,49 @@ public class Manager {
             return e.getMessage();
         }
         return surgeryManager.surgeryScheduler(null, null);
+    }
+
+    public String surgeryCanceled(Surgery surgery) {
+        try {
+            if (user == null) {
+                throw new UserNotLoggedIn("Faça login para cancelar a cirurgia.");
+            }
+        } catch (UserNotLoggedIn e) {
+            return e.getMessage();
+        }
+
+        Patient patient = surgery.getPatient();
+        Doctor doctor = surgery.getDoctor();
+
+        try {
+            boolean isPatient = patient != null && user.getEmail().equals(patient.getEmail());
+            boolean isDoctor = doctor != null && user.getEmail().equals(doctor.getEmail());
+
+            if (!isPatient && !isDoctor) {
+                throw new WrongUser("Você não tem permissão para cancelar esta cirurgia.");
+            }
+
+        } catch (WrongUser e) {
+            return e.getMessage();
+        }
+
+        try {
+            if (patient != null) patient.cancel(surgery);
+        } catch (ProcedureDoesNotExist e) {}
+
+        try {
+            if (doctor != null) doctor.cancel(surgery);
+        } catch (ProcedureDoesNotExist e) {}
+        
+        try {
+            user.cancel(surgery);
+        } catch (Exception e) {}
+
+        dataManager.delete(dataManager.getProceduresFile(), surgery);
+
+        if (patient != null) dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
+        if (doctor != null) dataManager.update(dataManager.getUsersFile(), doctor, d -> d.getEmail().equals(doctor.getEmail()));
+
+        return "Cirurgia cancelada com sucesso";
     }
 }

@@ -53,6 +53,19 @@ public class LoginController {
     }
 
     @FXML
+    public void abrirTelaCadastro() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agendajava/view/cadastro.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) emailInput.getScene().getWindow();
+            stage.setScene(new Scene(root, 400, 450));
+            stage.setTitle("Agenda Java - Cadastro");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
     public void encerrarPrograma() {
         System.exit(0);
     }

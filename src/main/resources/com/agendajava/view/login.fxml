@@ -20,6 +20,7 @@
                <PasswordField fx:id="senhaInput" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: #bdc3c7; -fx-padding: 8;"/>
             </VBox>
             <Button onAction="#fazerLogin" prefWidth="250.0" text="Entrar no Sistema" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10; -fx-cursor: hand;"/>
+            <Button onAction="#abrirTelaCadastro" prefWidth="250.0" text="Novo por aqui? Cadastre-se" style="-fx-background-color: transparent; -fx-text-fill: #2980b9; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-color: transparent;"/>
             <Button onAction="#encerrarPrograma" prefWidth="250.0" text="Encerrar Programa" style="-fx-background-color: transparent; -fx-text-fill: #95a5a6; -fx-font-weight: bold; -fx-cursor: hand; -fx-border-color: transparent;"/>
             <Label fx:id="mensagemErro" textFill="#e74c3c" wrapText="true" textAlignment="CENTER" style="-fx-font-weight: bold;"/>
          </children>
