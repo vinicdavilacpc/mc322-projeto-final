@@ -138,3 +138,9 @@ Para executar, basta escrever no terminal:
    ```bash
    .\gradlew.bat build
    ```
+
+## Membros do Grupo
+- Isabella Favaron Rover (RA: 281248)
+- Manuela Daros Misurelli (RA: 278223)
+- Tereza Figueiredo Diniz Zeni (RA: 278914)
+- Vinícius Cappelli d'Avila (RA: 185507)
