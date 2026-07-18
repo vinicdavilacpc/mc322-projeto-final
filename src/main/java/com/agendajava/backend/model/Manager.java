@@ -370,4 +370,30 @@ public class Manager {
 
         return "Cirurgia cancelada com sucesso";
     }
+
+    public List<Doctor> getTodosMedicos() {
+        List<User> users = dataManager.findAll(dataManager.getUsersFile(), User.class);
+        List<Doctor> doctors = new ArrayList<>();
+        if (users != null) {
+            for (User u : users) {
+                if (u instanceof Doctor) {
+                    doctors.add((Doctor) u);
+                }
+            }
+        }
+        return doctors;
+    }
+
+    public List<Patient> getTodosPacientes() {
+        List<User> users = dataManager.findAll(dataManager.getUsersFile(), User.class);
+        List<Patient> patients = new ArrayList<>();
+        if (users != null) {
+            for (User u : users) {
+                if (u instanceof Patient) {
+                    patients.add((Patient) u);
+                }
+            }
+        }
+        return patients;
+    }
 }

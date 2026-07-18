@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import com.agendajava.backend.model.Manager;
 import com.agendajava.backend.model.users.Doctor;
@@ -12,6 +13,7 @@ import com.agendajava.backend.model.users.Patient;
 import com.agendajava.backend.model.users.User;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -22,13 +24,31 @@ public class ConsultaController {
     @FXML private DatePicker dataInput;
     @FXML private TextField horaInput;
     @FXML private TextField duracaoInput;
-    @FXML private TextField emailContatoInput;
+    @FXML private ComboBox<String> emailContatoInput;
     @FXML private Label mensagemFeedback;
 
     private Manager manager;
 
     public void setManager(Manager manager) {
         this.manager = manager;
+        carregarContatos();
+    }
+
+    private void carregarContatos() {
+        User currentUser = manager.getCurrentUser();
+        emailContatoInput.getItems().clear();
+
+        if (currentUser instanceof Doctor) {
+            List<Patient> pacientes = manager.getTodosPacientes();
+            for (Patient p : pacientes) {
+                emailContatoInput.getItems().add(p.getEmail());
+            }
+        } else {
+            List<Doctor> medicos = manager.getTodosMedicos();
+            for (Doctor d : medicos) {
+                emailContatoInput.getItems().add(d.getEmail());
+            }
+        }
     }
 
     @FXML
@@ -38,9 +58,9 @@ public class ConsultaController {
             LocalDate data = dataInput.getValue();
             String horaStr = horaInput.getText();
             String duracaoStr = duracaoInput.getText();
-            String emailContato = emailContatoInput.getText();
+            String emailContato = emailContatoInput.getValue();
 
-            if (nome.isEmpty() || data == null || horaStr.isEmpty() || duracaoStr.isEmpty() || emailContato.isEmpty()) {
+            if (nome.isEmpty() || data == null || horaStr.isEmpty() || duracaoStr.isEmpty() || emailContato == null) {
                 exibirMensagem("Preencha todos os campos!", "#e74c3c");
                 return;
             }
@@ -98,7 +118,7 @@ public class ConsultaController {
         dataInput.setValue(null);
         horaInput.clear();
         duracaoInput.clear();
-        emailContatoInput.clear();
+        emailContatoInput.getSelectionModel().clearSelection();
     }
 
     private void exibirMensagem(String texto, String corHex) {
