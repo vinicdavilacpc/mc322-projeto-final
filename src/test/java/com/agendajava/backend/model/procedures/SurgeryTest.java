@@ -1,14 +1,5 @@
 package com.agendajava.backend.model.procedures;
 
-import com.agendajava.backend.model.Equipment;
-import com.agendajava.backend.model.Manager;
-import com.agendajava.backend.model.rooms.SurgeryRoom;
-import com.agendajava.backend.model.users.Doctor;
-import com.agendajava.backend.model.users.Patient;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +7,16 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import static org.mockito.MockitoAnnotations.initMocks;
+
+import com.agendajava.backend.model.Equipment;
+import com.agendajava.backend.model.Manager;
+import com.agendajava.backend.model.rooms.SurgeryRoom;
+import com.agendajava.backend.model.users.Doctor;
+import com.agendajava.backend.model.users.Patient;
 
 class SurgeryTest {
 
@@ -28,8 +28,8 @@ class SurgeryTest {
     @BeforeEach
     void setUp() throws Exception {
         initMocks(this);
-        surgeryUnderTest = new Surgery("name", mockPatient, Manager.Specialty.ANESTESIOLOGIA, Manager.Priority.ELETIVA,
-                false, Duration.ofDays(0L), 0, Duration.ofDays(0L), LocalDate.of(2020, 1, 1));
+        Surgery surgeryUnderTest = new Surgery("name", mockPatient, Manager.Specialty.ORTOPEDIA, Manager.Priority.ELETIVA,
+                false, Duration.ofHours(2), 0, Duration.ofHours(1), null);
     }
 
     @Test
@@ -69,7 +69,7 @@ class SurgeryTest {
 
     @Test
     void testSurgeonGetterAndSetter() {
-        final Doctor surgeon = new Doctor("name", "email", "password", Manager.Specialty.ANESTESIOLOGIA, false);
+        final Doctor surgeon = new Doctor("name", "email", "password", Manager.Specialty.ORTOPEDIA, false);
         surgeryUnderTest.setSurgeon(surgeon);
         assertEquals(surgeon, surgeryUnderTest.getDoctor());
     }
