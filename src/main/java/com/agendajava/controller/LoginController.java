@@ -15,14 +15,9 @@ import javafx.stage.Stage;
 
 public class LoginController {
 
-    @FXML
-    private TextField emailInput;
-
-    @FXML
-    private PasswordField senhaInput;
-
-    @FXML
-    private Label mensagemErro;
+    @FXML private TextField emailInput;
+    @FXML private PasswordField senhaInput;
+    @FXML private Label mensagemErro;
 
     private final Manager manager = new Manager();
 
@@ -30,6 +25,7 @@ public class LoginController {
     public void fazerLogin() {
         String email = emailInput.getText();
         String senha = senhaInput.getText();
+
         String resultado = manager.loginSuccessful(email, senha);
 
         if (resultado.equals("Login sucessful")) {
@@ -44,18 +40,33 @@ public class LoginController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agendajava/view/dashboard.fxml"));
             Parent root = loader.load();
-
             DashboardController dashboardController = loader.getController();
             dashboardController.setManager(this.manager);
-
             Stage stage = (Stage) emailInput.getScene().getWindow();
             Scene scene = new Scene(root, 800, 600);
             stage.setScene(scene);
             stage.setTitle("Agenda Java - Painel Principal");
-
         } catch (IOException e) {
             e.printStackTrace();
             mensagemErro.setText("Erro ao carregar a tela principal.");
         }
+    }
+
+    @FXML
+    public void abrirTelaCadastro() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/agendajava/view/cadastro.fxml"));
+            Parent root = loader.load();
+            Stage stage = (Stage) emailInput.getScene().getWindow();
+            stage.setScene(new Scene(root, 400, 450));
+            stage.setTitle("Agenda Java - Cadastro");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void encerrarPrograma() {
+        System.exit(0);
     }
 }

@@ -39,6 +39,10 @@ public abstract class Procedure {
         return this.startDateTime;
     }
 
+    public void setStartDateTime(LocalDateTime startDateTime) {
+        this.startDateTime = startDateTime;
+    }
+
     public Duration getDuration() {
         return this.duration;
     }
@@ -49,6 +53,7 @@ public abstract class Procedure {
 
     @JsonIgnore
     public LocalDateTime getEndDateTime() {
+        if (this.startDateTime == null) return null;
         return this.startDateTime.plus(this.duration);
     }
 

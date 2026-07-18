@@ -5,11 +5,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import com.agendajava.backend.model.Manager;
 import com.agendajava.backend.model.users.Doctor;
+import com.agendajava.backend.model.users.Patient;
+import com.agendajava.backend.model.users.User;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -20,13 +24,31 @@ public class ConsultaController {
     @FXML private DatePicker dataInput;
     @FXML private TextField horaInput;
     @FXML private TextField duracaoInput;
-    @FXML private TextField medicoEmailInput;
+    @FXML private ComboBox<String> emailContatoInput;
     @FXML private Label mensagemFeedback;
 
     private Manager manager;
 
     public void setManager(Manager manager) {
         this.manager = manager;
+        carregarContatos();
+    }
+
+    private void carregarContatos() {
+        User currentUser = manager.getCurrentUser();
+        emailContatoInput.getItems().clear();
+
+        if (currentUser instanceof Doctor) {
+            List<Patient> pacientes = manager.getTodosPacientes();
+            for (Patient p : pacientes) {
+                emailContatoInput.getItems().add(p.getEmail());
+            }
+        } else {
+            List<Doctor> medicos = manager.getTodosMedicos();
+            for (Doctor d : medicos) {
+                emailContatoInput.getItems().add(d.getEmail());
+            }
+        }
     }
 
     @FXML
@@ -36,9 +58,9 @@ public class ConsultaController {
             LocalDate data = dataInput.getValue();
             String horaStr = horaInput.getText();
             String duracaoStr = duracaoInput.getText();
-            String emailMedico = medicoEmailInput.getText();
+            String emailContato = emailContatoInput.getValue();
 
-            if (nome.isEmpty() || data == null || horaStr.isEmpty() || duracaoStr.isEmpty() || emailMedico.isEmpty()) {
+            if (nome.isEmpty() || data == null || horaStr.isEmpty() || duracaoStr.isEmpty() || emailContato == null) {
                 exibirMensagem("Preencha todos os campos!", "#e74c3c");
                 return;
             }
@@ -53,13 +75,27 @@ public class ConsultaController {
             LocalDateTime startDateTime = LocalDateTime.of(data, hora);
             Duration duration = Duration.ofMinutes(minutos);
 
-            Doctor doctor = manager.getDoctorByEmail(emailMedico);
-            if (doctor == null) {
-                exibirMensagem("Médico não encontrado no sistema.", "#e74c3c");
-                return;
+            User currentUser = manager.getCurrentUser();
+            Doctor doctor = null;
+            Patient patient = null;
+
+            if (currentUser instanceof Doctor) {
+                doctor = (Doctor) currentUser;
+                patient = manager.getPatientByEmail(emailContato);
+                if (patient == null) {
+                    exibirMensagem("Paciente não encontrado no sistema.", "#e74c3c");
+                    return;
+                }
+            } else {
+                patient = (Patient) currentUser;
+                doctor = manager.getDoctorByEmail(emailContato);
+                if (doctor == null) {
+                    exibirMensagem("Médico não encontrado no sistema.", "#e74c3c");
+                    return;
+                }
             }
 
-            String resultado = manager.appointmentScheduled(nome, startDateTime, duration, doctor);
+            String resultado = manager.appointmentScheduled(nome, startDateTime, duration, patient, doctor);
 
             if (resultado.equals("Appointment scheduled")) {
                 exibirMensagem("Consulta agendada com sucesso!", "#2ecc71");
@@ -71,7 +107,7 @@ public class ConsultaController {
         } catch (DateTimeParseException e) {
             exibirMensagem("Formato de hora inválido. Use HH:mm (ex: 14:30)", "#e74c3c");
         } catch (NumberFormatException e) {
-            exibirMensagem("A duração deve ser um número inteiro (em minutos).", "#e74c3c");
+            exibirMensagem("A duração deve ser um número inteiro.", "#e74c3c");
         } catch (Exception e) {
             exibirMensagem("Erro inesperado: " + e.getMessage(), "#e74c3c");
         }
@@ -82,7 +118,7 @@ public class ConsultaController {
         dataInput.setValue(null);
         horaInput.clear();
         duracaoInput.clear();
-        medicoEmailInput.clear();
+        emailContatoInput.getSelectionModel().clearSelection();
     }
 
     private void exibirMensagem(String texto, String corHex) {

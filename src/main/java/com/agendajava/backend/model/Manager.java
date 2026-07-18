@@ -1,16 +1,14 @@
 package com.agendajava.backend.model;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
-import java.time.Duration;
-import java.time.LocalDate;
 
 import com.agendajava.backend.exceptions.InvalidLogin;
 import com.agendajava.backend.exceptions.ProcedureDoesNotExist;
-import com.agendajava.backend.exceptions.SchedulingConflict;
 import com.agendajava.backend.exceptions.UserAlreadyExists;
 import com.agendajava.backend.exceptions.UserNotLoggedIn;
 import com.agendajava.backend.exceptions.WrongUser;
@@ -43,7 +41,7 @@ public class Manager {
         this.dataManager = new DataManager();
         this.authenticator = new Authenticator();
         this.doctorManager = new DoctorManager(dataManager);
-        this.surgeryManager = new SurgeryManager(5, 8, doctorManager);
+        this.surgeryManager = new SurgeryManager(5, 8, doctorManager, dataManager);
         this.user = null;
     }
 
@@ -121,9 +119,9 @@ public class Manager {
         return "Login sucessful";
     }
 
-    public String registrationSuccessful(String name, String email, String password, String role, Specialty specialty, DataManager dataManager) {
+    public String registrationSuccessful(String name, String email, String password, String role, Specialty specialty) {
         try {
-            user = authenticator.register(name, email, password, role, specialty, dataManager);
+            user = authenticator.register(name, email, password, role, specialty, this.dataManager);
             populateUserCalendar(user);
         } catch (UserAlreadyExists e) {
             return e.getMessage();
@@ -131,67 +129,53 @@ public class Manager {
         return "Registration sucessful";
     }
 
-    public String appointmentScheduled(String name, LocalDateTime startDateTime, Duration duration, Doctor doctor) {
-        try {
-            if (user == null) {
-                throw new UserNotLoggedIn("Log in to schedule an appointment");
-            }
-        } catch (UserNotLoggedIn e) {
-            return e.getMessage();
+    public User getCurrentUser() {
+        return this.user;
+    }
+
+    public String appointmentScheduled(String name, LocalDateTime startDateTime, Duration duration, Patient patient, Doctor doctor) {
+        if (user == null) {
+            return "Log in to schedule an appointment";
         }
-        Patient patient;
-        try {
-            patient = (Patient) user;
-        } catch (ClassCastException e) {
-            return "Doctors cannot schedule appointments";
+        
+        if (!doctor.isAvailable(startDateTime, duration)) {
+            return "O médico " + doctor.getName() + " está indisponível nesse horário.";
         }
+        if (!patient.isAvailable(startDateTime, duration)) {
+            return "O paciente " + patient.getName() + " está indisponível nesse horário.";
+        }
+
         Appointment appointment = new Appointment(name, startDateTime, duration, patient, doctor);
-        try {
-            if (patient.isAvailable(startDateTime, duration))
-                doctor.schedule(startDateTime, duration, appointment);
-        } catch (SchedulingConflict e) {
-            return doctor.getName() + " is unavailable at that time";
-        }
-        try {
-            patient.schedule(startDateTime, duration, appointment);
-        } catch (SchedulingConflict e) {
-            return "You already have a procedure scheduled at that time";
-        }
+        doctor.schedule(startDateTime, duration, appointment);
+        patient.schedule(startDateTime, duration, appointment);
+        
         dataManager.add(dataManager.getProceduresFile(), appointment);
         dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
         dataManager.update(dataManager.getUsersFile(), doctor, d -> d.getEmail().equals(doctor.getEmail()));
+        
         return "Appointment scheduled";
     }
 
-    public String examinationScheduled(String name, LocalDateTime startDateTime, Duration duration, ExaminationRoom room) {
-        try {
-            if (user == null) {
-                throw new UserNotLoggedIn("Log in to schedule an examination");
-            }
-        } catch (UserNotLoggedIn e) {
-            return e.getMessage();
+    public String examinationScheduled(String name, LocalDateTime startDateTime, Duration duration, Patient patient, ExaminationRoom room) {
+        if (user == null || !(user instanceof Doctor)) {
+            return "Apenas médicos podem agendar exames.";
         }
-        Patient patient;
-        try {
-            patient = (Patient) user;
-        } catch (ClassCastException e) {
-            return "Doctors cannot schedule examinations";
+        
+        if (!room.isAvailable(startDateTime, duration)) {
+            return "A sala de exame " + room.getName() + " está indisponível nesse horário.";
         }
+        if (!patient.isAvailable(startDateTime, duration)) {
+            return "O paciente " + patient.getName() + " já tem um procedimento nesse horário.";
+        }
+
         Examination examination = new Examination(name, startDateTime, duration, patient, room);
-        try {
-            if (patient.isAvailable(startDateTime, duration))
-                room.schedule(startDateTime, duration, examination);
-        } catch (SchedulingConflict e) {
-            return "The examination room is unavailable at that time";
-        }
-        try {
-            patient.schedule(startDateTime, duration, examination);
-        } catch (SchedulingConflict e) {
-            return "You already have a procedure scheduled at that time";
-        }
+        room.schedule(startDateTime, duration, examination);
+        patient.schedule(startDateTime, duration, examination);
+        
         dataManager.add(dataManager.getProceduresFile(), examination);
         dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
         dataManager.update(dataManager.getRoomsFile(), room, r -> r.getName().equals(room.getName()));
+        
         return "Examination scheduled";
     }
 
@@ -215,7 +199,7 @@ public class Manager {
         }
 
         Surgery surgery = new Surgery(name, patient, specialty, priority, icuNecessity, duration, clinicalPriority, estimatedRecoverDuration, limitDate);
-        surgeryScheduler.addToPriorityLine(surgery);
+        surgeryManager.addToPriorityLine(surgery);
         
         return "Surgery created";
     };
@@ -294,10 +278,6 @@ public class Manager {
         return "Examination canceled";
     }
 
-    public String surgeryCanceled(Surgery surgery) {
-        return "Em desenvolvimento";
-    }
-
     public List<Procedure> getMeusProcedimentos() {
         List<Procedure> result = new ArrayList<>();
         if (user == null) return result;
@@ -326,5 +306,94 @@ public class Manager {
             }
         }
         return result;
+    }
+
+    public Patient getPatientByEmail(String email) {
+        User foundUser = dataManager.findOne(dataManager.getUsersFile(), User.class, u -> u.getEmail().equals(email));
+        if (foundUser instanceof Patient) {
+            return (Patient) foundUser;
+        }
+        return null;
+    }
+
+    public String processarFilaCirurgias() {
+        try {
+            if (user == null || !(user instanceof Doctor)) {
+                throw new WrongUser("Apenas médicos podem processar a fila de cirurgias.");
+            }
+        } catch (WrongUser e) {
+            return e.getMessage();
+        }
+        return surgeryManager.surgeryScheduler(null, null);
+    }
+
+    public String surgeryCanceled(Surgery surgery) {
+        try {
+            if (user == null) {
+                throw new UserNotLoggedIn("Faça login para cancelar a cirurgia.");
+            }
+        } catch (UserNotLoggedIn e) {
+            return e.getMessage();
+        }
+
+        Patient patient = surgery.getPatient();
+        Doctor doctor = surgery.getDoctor();
+
+        try {
+            boolean isPatient = patient != null && user.getEmail().equals(patient.getEmail());
+            boolean isDoctor = doctor != null && user.getEmail().equals(doctor.getEmail());
+
+            if (!isPatient && !isDoctor) {
+                throw new WrongUser("Você não tem permissão para cancelar esta cirurgia.");
+            }
+
+        } catch (WrongUser e) {
+            return e.getMessage();
+        }
+
+        try {
+            if (patient != null) patient.cancel(surgery);
+        } catch (ProcedureDoesNotExist e) {}
+
+        try {
+            if (doctor != null) doctor.cancel(surgery);
+        } catch (ProcedureDoesNotExist e) {}
+        
+        try {
+            user.cancel(surgery);
+        } catch (Exception e) {}
+
+        dataManager.delete(dataManager.getProceduresFile(), surgery);
+
+        if (patient != null) dataManager.update(dataManager.getUsersFile(), patient, p -> p.getEmail().equals(patient.getEmail()));
+        if (doctor != null) dataManager.update(dataManager.getUsersFile(), doctor, d -> d.getEmail().equals(doctor.getEmail()));
+
+        return "Cirurgia cancelada com sucesso";
+    }
+
+    public List<Doctor> getTodosMedicos() {
+        List<User> users = dataManager.findAll(dataManager.getUsersFile(), User.class);
+        List<Doctor> doctors = new ArrayList<>();
+        if (users != null) {
+            for (User u : users) {
+                if (u instanceof Doctor) {
+                    doctors.add((Doctor) u);
+                }
+            }
+        }
+        return doctors;
+    }
+
+    public List<Patient> getTodosPacientes() {
+        List<User> users = dataManager.findAll(dataManager.getUsersFile(), User.class);
+        List<Patient> patients = new ArrayList<>();
+        if (users != null) {
+            for (User u : users) {
+                if (u instanceof Patient) {
+                    patients.add((Patient) u);
+                }
+            }
+        }
+        return patients;
     }
 }

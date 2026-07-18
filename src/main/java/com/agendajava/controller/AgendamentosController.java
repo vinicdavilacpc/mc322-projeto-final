@@ -6,6 +6,7 @@ import com.agendajava.backend.model.Manager;
 import com.agendajava.backend.model.procedures.Appointment;
 import com.agendajava.backend.model.procedures.Examination;
 import com.agendajava.backend.model.procedures.Procedure;
+import com.agendajava.backend.model.procedures.Surgery;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -33,10 +34,20 @@ public class AgendamentosController {
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    String tipo = item instanceof Appointment ? "Consulta" : "Exame";
-                    setText("[" + tipo + "] " + item.getName() + " | Data: " + item.getStarDateTime().toLocalDate() + 
-                            " às " + item.getStarDateTime().toLocalTime() + 
-                            " | Duração: " + item.getDuration().toMinutes() + "min");
+                    String tipo;
+                    if (item instanceof Appointment) {
+                        tipo = "Consulta";
+                    } else if (item instanceof Examination) {
+                        tipo = "Exame";
+                    } else if (item instanceof Surgery) {
+                        tipo = "Cirurgia";
+                    } else {
+                        tipo = "Procedimento";
+                    }
+                    
+                    setText("[" + tipo + "] " + item.getName() + " | Data: " + item.getStarDateTime().toLocalDate() +
+                             " às " + item.getStarDateTime().toLocalTime() +
+                             " | Duração: " + item.getDuration().toMinutes() + "min");
                 }
             }
         });
@@ -55,15 +66,18 @@ public class AgendamentosController {
         }
 
         String resultado = "";
+        
         if (selecionado instanceof Appointment) {
             resultado = manager.appointmentCanceled((Appointment) selecionado);
         } else if (selecionado instanceof Examination) {
             resultado = manager.examinationCanceled((Examination) selecionado);
+        } else if (selecionado instanceof Surgery) {
+            resultado = manager.surgeryCanceled((Surgery) selecionado);
         } else {
             resultado = "Cancelamento não suportado para este tipo.";
         }
 
-        if (resultado.toLowerCase().contains("canceled")) {
+        if (resultado.toLowerCase().contains("canceled") || resultado.toLowerCase().contains("sucesso")) {
             exibirMensagem("Procedimento cancelado com sucesso!", "green");
             carregarAgendamentos(); 
         } else {

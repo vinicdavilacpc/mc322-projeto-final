@@ -1,7 +1,10 @@
-[ {
-  "type" : "examinationRoom",
-  "name" : "Sala 1",
-  "equipments" : [ {
-    "name" : "Aparelho de Raio-X"
-  } ]
-} ]
+[
+  { "type": "examinationRoom", "name": "Consultório 1", "equipments": [] },
+  { "type": "examinationRoom", "name": "Consultório 2", "equipments": [] },
+  { "type": "examinationRoom", "name": "Consultório 3", "equipments": [] },
+  { "type": "examinationRoom", "name": "Consultório 4", "equipments": [] },
+  { "type": "examinationRoom", "name": "Consultório 5", "equipments": [] },
+  { "type": "examinationRoom", "name": "Consultório 6", "equipments": [] },
+  { "type": "examinationRoom", "name": "Consultório 7", "equipments": [] },
+  { "type": "examinationRoom", "name": "Consultório 8", "equipments": [] }
+]

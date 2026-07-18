@@ -8,6 +8,7 @@ import java.time.format.DateTimeParseException;
 
 import com.agendajava.backend.model.Manager;
 import com.agendajava.backend.model.rooms.ExaminationRoom;
+import com.agendajava.backend.model.users.Patient;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.DatePicker;
@@ -21,6 +22,7 @@ public class ExameController {
     @FXML private TextField horaInput;
     @FXML private TextField duracaoInput;
     @FXML private TextField salaInput;
+    @FXML private TextField pacienteEmailInput;
     @FXML private Label mensagemFeedback;
 
     private Manager manager;
@@ -37,8 +39,9 @@ public class ExameController {
             String horaStr = horaInput.getText();
             String duracaoStr = duracaoInput.getText();
             String nomeSala = salaInput.getText();
+            String emailPaciente = pacienteEmailInput.getText();
 
-            if (nome.isEmpty() || data == null || horaStr.isEmpty() || duracaoStr.isEmpty() || nomeSala.isEmpty()) {
+            if (nome.isEmpty() || data == null || horaStr.isEmpty() || duracaoStr.isEmpty() || nomeSala.isEmpty() || emailPaciente.isEmpty()) {
                 exibirMensagem("Preencha todos os campos!", "#e74c3c");
                 return;
             }
@@ -59,7 +62,13 @@ public class ExameController {
                 return;
             }
 
-            String resultado = manager.examinationScheduled(nome, startDateTime, duration, room);
+            Patient patient = manager.getPatientByEmail(emailPaciente);
+            if (patient == null) {
+                exibirMensagem("Paciente não encontrado no sistema.", "#e74c3c");
+                return;
+            }
+
+            String resultado = manager.examinationScheduled(nome, startDateTime, duration, patient, room);
 
             if (resultado.equals("Examination scheduled")) {
                 exibirMensagem("Exame agendado com sucesso!", "#2ecc71");
@@ -71,7 +80,7 @@ public class ExameController {
         } catch (DateTimeParseException e) {
             exibirMensagem("Formato de hora inválido. Use HH:mm (ex: 14:30)", "#e74c3c");
         } catch (NumberFormatException e) {
-            exibirMensagem("A duração deve ser um número inteiro (minutos).", "#e74c3c");
+            exibirMensagem("A duração deve ser um número inteiro.", "#e74c3c");
         } catch (Exception e) {
             exibirMensagem("Erro inesperado: " + e.getMessage(), "#e74c3c");
         }
@@ -83,6 +92,7 @@ public class ExameController {
         horaInput.clear();
         duracaoInput.clear();
         salaInput.clear();
+        pacienteEmailInput.clear();
     }
 
     private void exibirMensagem(String texto, String corHex) {
