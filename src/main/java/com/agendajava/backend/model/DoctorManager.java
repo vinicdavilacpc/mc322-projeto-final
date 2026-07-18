@@ -12,13 +12,11 @@ import com.agendajava.backend.model.users.User;
 public class DoctorManager {
     private Map<Specialty, List<Doctor>> doctors = new HashMap<>();
     private Map<Specialty, List<Doctor>> surgeonDoctors = new HashMap<>();
-    private Map<Specialty, List<Doctor>> anestesistDoctors = new HashMap<>();
 
     public DoctorManager(DataManager dataManager) {
-        for (int i = 0; i < Specialty.values().length; i++) {
-              doctors.put(Specialty.values()[i], new ArrayList<>());
-              surgeonDoctors.put(Specialty.values()[i], new ArrayList<>());
-              anestesistDoctors.put(Specialty.values()[i], new ArrayList<>());
+        for (Specialty s : Specialty.values()) {
+              doctors.put(s, new ArrayList<>());
+              surgeonDoctors.put(s, new ArrayList<>());
         }
 
         List<User> users = dataManager.findAll(dataManager.getUsersFile(), User.class);
@@ -29,10 +27,9 @@ public class DoctorManager {
                     Specialty spec = doc.getSpecialty();
                     if (spec != null) {
                         doctors.get(spec).add(doc);
+                        
                         if (doc.isSurgeon()) {
                             surgeonDoctors.get(spec).add(doc);
-                        } else {
-                            anestesistDoctors.get(spec).add(doc);
                         }
                     }
                 }
@@ -48,16 +45,15 @@ public class DoctorManager {
         return this.surgeonDoctors.get(specialty);
     }
 
-    public List<Doctor> getAnestesistsOf(Specialty specialty) {
-        return this.anestesistDoctors.get(specialty);
+    public List<Doctor> getAnestesists() {
+        return this.doctors.get(Specialty.ANESTESIOLOGIA);
     }
 
     public void addDoctorOf(Doctor newDoctor) {
         this.doctors.get(newDoctor.getSpecialty()).add(newDoctor);
-        if (newDoctor.isSurgeon())
+        if (newDoctor.isSurgeon()) {
             addSurgeon(newDoctor);
-        else 
-            anestesistDoctors.get(newDoctor.getSpecialty()).add(newDoctor);
+        }
     }
 
     public void addSurgeon(Doctor newSurgeon) {

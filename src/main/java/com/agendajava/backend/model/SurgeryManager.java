@@ -88,10 +88,12 @@ public class SurgeryManager {
         
         for (Specialty currentSpecialty : Specialty.values()) {
             List<Surgery> surgeries = this.priorityLine.get(currentSpecialty);
-            List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
+            
+            List<Doctor> anestesists = doctorManager.getAnestesists();
             List<Doctor> surgeons = doctorManager.getSurgeonsOf(currentSpecialty);
+            
             if (!surgeries.isEmpty() && (anestesists == null || anestesists.isEmpty() || surgeons == null || surgeons.isEmpty())) {
-                return "Erro: Faltam Cirurgiões ou Anestesistas de " + currentSpecialty + " cadastrados no sistema!";
+                return "Erro: Faltam Cirurgiões de " + currentSpecialty + " ou Anestesistas cadastrados no sistema!";
             }
 
             for (int j = 0; j < surgeries.size(); j++) {
@@ -201,7 +203,7 @@ public class SurgeryManager {
         Specialty currentSpecialty = surgery.getSpecialty(); 
         boolean scheduled = false; 
         
-        List<Doctor> anestesists = doctorManager.getAnestesistsOf(currentSpecialty);
+        List<Doctor> anestesists = doctorManager.getAnestesists();
         for (int a = 0; a < anestesists.size() && !scheduled; a++) {
             if (anestesists.get(a).isAvailable(startDateTime, surgery.getDuration())) {
                 

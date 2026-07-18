@@ -59,9 +59,4 @@
   "password" : "123",
   "specialty" : "OFTALMOLOGIA",
   "surgeon" : false
-}, {
-  "type" : "patient",
-  "name" : "Paciente Zero",
-  "email" : "teste@email.com",
-  "password" : "1234"
-} ]
+}]
